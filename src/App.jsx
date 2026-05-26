@@ -14,6 +14,8 @@ const EJS = {
     template: "template_xh2ko6i",
     pubKey: "Q2o0ch1M3vDXHxutj",
 };
+const UPI_ID = "roobyrmb-1@okicici";
+const UPI_NAME = "Rooby Regupathy";
 
 /* ═══════════════════════════════════════════════════════════
    MAIL MIDDLEWARE
@@ -34,15 +36,18 @@ const sendMail = async (type, payload = {}) => {
         view_notify: {
             title: "👁 New Resume View",
             name: "System Notification",
-            email: "system@portfolio",
+            email: "roobyrmb@gmail.com",
             time: new Date().toLocaleString(),
-            message: `Your resume was just viewed!\nTotal views so far: ${payload.count}`,
+            message: `Your resume was just viewed!
+                      Total views so far: ${payload.count}
+                      Location: ${payload.location || "Unknown"}
+                      IP: ${payload.ip || "—"}`,
         },
         // Someone downloaded the resume
         download_notify: {
             title: "⬇ Resume Downloaded!",
             name: "System Notification",
-            email: "system@portfolio",
+            email: "roobyrmb@gmail.com",
             time: new Date().toLocaleString(),
             message: `Someone downloaded your resume!\nTotal downloads so far: ${payload.count}`,
         },
@@ -387,8 +392,10 @@ const WHY_ME = [
 ];
 
 const TYPEWRITER = [
-    "Full Stack Developer (MEAN)",
-    "AI / LLM Engineer",
+    "Freelancer",
+    "Consultant",
+    "Full Stack Developer",
+    "AI Analyst",
     "Blockchain Developer",
     "Problem Solver",
     "Product Builder",
@@ -417,14 +424,6 @@ export default function SmartResume() {
     const [coffeeCustom, setCoffeeCustom] = useState(false);  // ← add
     const [coffeeNote, setCoffeeNote] = useState("");      // ← add
     const toastId = useRef(0);
-
-
-    const UPI_ID = "roobyrmb-1@okicici";
-    const UPI_NAME = "Rooby Regupathy";
-    // const upiLink = (amt) => `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent("Support Rooby ☕")}`;
-    // const gpayLink = (amt) => `tez://upi/pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR`;
-    // const phonepeLink = (amt) => `phonepe://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR`;
-
     const upiLink = (amt) => `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent(coffeeNote ? `${coffeeNote} | Support Rooby ☕` : "Support Rooby ☕")}`;
     const gpayLink = (amt) => `tez://upi/pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent(coffeeNote ? `${coffeeNote} | Support Rooby ☕` : "Support Rooby ☕")}`;
     const phonepeLink = (amt) => `phonepe://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent(coffeeNote ? `${coffeeNote} | Support Rooby ☕` : "Support Rooby ☕")}`;
@@ -439,13 +438,6 @@ export default function SmartResume() {
         document.head.appendChild(style);
         return () => { try { document.head.removeChild(link); document.head.removeChild(style); } catch { } };
     }, []);
-
-    /* ── Welcome toast ── */
-    // useEffect(() => {
-    //   const t = setTimeout(() => pushToast("Glad you clicked 😊 it’s worth your time 👋 let`s connect if something catches your eye 😉", "✦", "default"), [',k']);
-    //   return () => clearTimeout(t);
-    // }, []);
-
 
     /* ── Inject CSS + Fonts ── */
     useEffect(() => {
@@ -477,8 +469,25 @@ export default function SmartResume() {
                     const newViews = data.views + 1;
                     await supabase.from('counted').update({ views: newViews }).eq('id', 1);
                     setStats(s => ({ ...s, views: newViews, downloads: data.downloads, contacts: data.contacts }));
-                    // 📧 Notify you by email on every view
-                    await sendMail("view_notify", { count: newViews });
+                    // 🌍 Get visitor location
+                    let locationStr = "Unknown";
+                    let ip = "Unknown";
+
+                    try {
+                        const res = await fetch("https://ipapi.co/json/");
+                        const loc = await res.json();
+
+                        locationStr = `${loc.city}, ${loc.region}, ${loc.country_name}`;
+                        ip = loc.ip;
+                    } catch (locErr) {
+                        console.warn("[location]", locErr);
+                    }
+                    // 📧 Notify you by email on every view                    
+                    await sendMail("view_notify", {
+                        count: newViews,
+                        location: locationStr,
+                        ip: ip,
+                    });
                 }
             } catch (err) {
                 console.warn("[trackView]", err);
@@ -565,7 +574,7 @@ export default function SmartResume() {
         }
         // Force download
         const link = document.createElement('a');
-        link.href = '/public/Rooby_SE_26.pdf';
+        link.href = '/Rooby_SE_26.pdf';
         link.download = 'Rooby_Regupathy_Resume.pdf';
         document.body.appendChild(link);
         link.click();
@@ -792,7 +801,7 @@ export default function SmartResume() {
                         Rooby <span className="acc">Regupathy</span>
                     </h1>
                     <p className="sr-herorole">
-                        AI Analyst &amp; Full Stack Engineer — MEAN Stack · Blockchain · LLMs
+                        AI Analyst &amp; Full Stack Engineer · Blockchain · LLMs
                     </p>
                     <div className="sr-typerow">
                         <span className="sr-typepre">&gt;_</span>
@@ -826,18 +835,18 @@ export default function SmartResume() {
                         <div className="sr-rleft">
                             <div className="sr-abouttext">
                                 <p>I'm an <strong>AI Analyst and Full Stack Developer</strong> with a proven track record in building innovative and scalable web applications. Currently deep in the AI space — working hands-on with <strong>LLMs, RAG pipelines, prompt engineering, and orchestration frameworks</strong>.</p>
-                                <p>With <strong>2–3 years of MEAN stack experience</strong>, I've shipped real products across blockchain, web apps, and APIs. I'm a rare bridge between traditional full-stack engineering and modern AI capabilities — able to architect systems that are both technically sound and intelligently augmented.</p>
+                                <p>With <strong>2–3 years of Full stack experience</strong>, I've shipped real products across blockchain, web apps, and APIs. I'm a rare bridge between traditional full-stack engineering and modern AI capabilities — able to architect systems that are both technically sound and intelligently augmented.</p>
                                 <p>I analyze business needs, translate them into technical requirements, and deliver <strong>high-quality, efficient code</strong>. I thrive in collaborative environments and bring genuine enthusiasm to every new stack or challenge.</p>
                             </div>
                         </div>
                         <div className="sr-rright">
                             <div className="sr-detailcard">
-                                {[
-                                    ["Focus", "AI + Full Stack"],
-                                    ["Experience", "2–3 Years"],
-                                    ["Stack", "MEAN + AI/LLMs"],
-                                    ["Blockchain", "2+ Years"],
-                                    ["Location", "Remote • Worldwide"],
+                                {[     
+                                        ["Focus", "AI & Full Stack Engineering"],
+                                        ["Experience", "3 Years"],
+                                        ["Stack", "LLMs • SAP/ABAP • Python • SQL • MEAN/MERN"],
+                                        ["Additional", "Blockchain"],
+                                        ["Location", "Remote • Worldwide"],
                                     ["Status", <span key="s" className="sr-openbadge"><span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />Available for Freelance & Consulting Projects</span>],
                                 ].map(([k, v]) => (
                                     <div key={k} className="sr-drow">
