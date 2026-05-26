@@ -1,4 +1,59 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import emailjs from '@emailjs/browser';
+import { createClient } from '@supabase/supabase-js';
+
+/* ═══════════════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════════════ */
+const supabase = createClient(
+    "https://glkbdepkpgarxccyllyh.supabase.co",
+    "sb_publishable_AWelGsWATsWh2OFHEZDsRg_5oOPbrQm"
+);
+const EJS = {
+    service: "service_v60ojpb",
+    template: "template_xh2ko6i",
+    pubKey: "Q2o0ch1M3vDXHxutj",
+};
+
+/* ═══════════════════════════════════════════════════════════
+   MAIL MIDDLEWARE
+   Centralised — call sendMail(type, payload) anywhere
+   Types: "contact" | "view_notify" | "download_notify"
+═══════════════════════════════════════════════════════════ */
+const sendMail = async (type, payload = {}) => {
+    const templates = {
+        // Someone filled the contact form
+        contact: {
+            title: "📩 New Contact Message — Portfolio",
+            name: payload.name || "Unknown",
+            email: payload.email || "—",
+            time: new Date().toLocaleString(),
+            message: payload.message || "—",
+        },
+        // Someone viewed the resume
+        view_notify: {
+            title: "👁 New Resume View",
+            name: "System Notification",
+            email: "system@portfolio",
+            time: new Date().toLocaleString(),
+            message: `Your resume was just viewed!\nTotal views so far: ${payload.count}`,
+        },
+        // Someone downloaded the resume
+        download_notify: {
+            title: "⬇ Resume Downloaded!",
+            name: "System Notification",
+            email: "system@portfolio",
+            time: new Date().toLocaleString(),
+            message: `Someone downloaded your resume!\nTotal downloads so far: ${payload.count}`,
+        },
+    };
+
+    try {
+        await emailjs.send(EJS.service, EJS.template, templates[type], EJS.pubKey);
+    } catch (err) {
+        console.warn(`[sendMail] ${type} failed:`, err);
+    }
+};
 
 /* ═══════════════════════════════════════════════════════════
    GLOBAL CSS — injected into <head>
@@ -293,501 +348,759 @@ body{font-family:'JetBrains Mono',monospace;background:#050810;color:#cdd6f4;ove
    RESUME DATA
 ═══════════════════════════════════════════════════════════ */
 const SKILLS = [
-  { cat: "AI / LLM Stack", items: ["LLM Integration", "RAG Systems", "Prompt Engineering", "Embeddings", "Agent Orchestration", "LangChain", "Vector DBs"] },
-  { cat: "Frontend", items: ["React.js", "Angular", "TypeScript", "GraphQL", "HTML5", "CSS3", "Responsive UI"] },
-  { cat: "Backend", items: ["Node.js", "Express.js", "PHP", "REST APIs", "JWT Auth", "WebSockets", "Microservices"] },
-  { cat: "Databases", items: ["MongoDB", "MySQL", "PostgreSQL", "Redis", "NoSQL Design", "Schema Design"] },
-  { cat: "Blockchain", items: ["Smart Contracts", "Solidity", "Web3.js", "DApps", "Ethereum", "Token Standards"] },
-  { cat: "DevOps & Tools", items: ["Git / GitHub", "Docker", "Vercel", "Nginx", "Linux", "CI/CD", "Postman"] },
+    { cat: "AI / LLM Stack", items: ["LLM Integration", "RAG Systems", "Prompt Engineering", "Embeddings", "Agent Orchestration", "LangChain", "Vector DBs"] },
+    { cat: "Frontend", items: ["React.js", "Angular", "TypeScript", "GraphQL", "HTML5", "CSS3", "Responsive UI"] },
+    { cat: "Backend", items: ["Node.js", "Express.js", "PHP", "REST APIs", "JWT Auth", "WebSockets", "Microservices"] },
+    { cat: "Databases", items: ["MongoDB", "MySQL", "PostgreSQL", "Redis", "NoSQL Design", "Schema Design"] },
+    { cat: "Blockchain", items: ["Smart Contracts", "Solidity", "Web3.js", "DApps", "Ethereum", "Token Standards"] },
+    { cat: "DevOps & Tools", items: ["Git / GitHub", "Docker", "Vercel", "Nginx", "Linux", "CI/CD", "Postman"] },
 ];
 
 const EXPERIENCE = [
-  {
-    role: "AI Analyst & Full Stack Developer",
-    company: "Independent / Freelance",
-    period: "2026 – Present",
-    desc: "Building AI-powered web applications using LLMs, RAG pipelines, and vector embeddings. Prompting, Chain-of-Thought reasoning. Translating complex business needs into clean, scalable technical architectures.",
-    tags: ["SAP/ABAP", "Python", "LLMs", "BigQuery", "RAG", "Vector", "Prompt"],
-  },
-  {
-    role: "Software Engineer — MEAN Stack",
-    company: "Orion Innovation",
-    period: "2025",
-    desc: "Built and shipped multiple client-facing software applications end-to-end. Owned database schema design, REST API development, Angular frontend, Node.js backend, Reactive Forms, and RxJS.",
-    tags: ["Angular", "Node.js", "Express", "MongoDB", "RxJS"],
-  },
-  {
-    role: "Full Stack Developer",
-    company: "Osiz Technologies",
-    period: "2022 – 2024",
-    desc: "Developed responsive web applications with TypeScript and JavaScript. Deep dive into blockchain tech, Git workflows, and collaborative cross-team development practices.",
-    tags: ["TypeScript", "JavaScript", "Git", "Angular", "Node.js", "Express", "MongoDB", "Bootstrap"],
-  },
+    {
+        role: "Freelance AI Analyst Consultant",
+        company: "Independent / Freelance",
+        desc: "Building AI-powered web applications using LLMs, RAG pipelines, and vector embeddings. Prompting, Chain-of-Thought reasoning. Translating complex business needs into clean, scalable technical architectures.",
+        tags: ["SAP/ABAP", "Python", "LLMs", "BigQuery", "RAG", "Vector", "Prompt"],
+    },
+    {
+        role: "Software Engineer — MEAN Stack",
+        company: "Orion Innovation",
+        desc: "Built and shipped multiple client-facing software applications end-to-end. Owned database schema design, REST API development, Angular frontend, Node.js backend, Reactive Forms, and RxJS.",
+        tags: ["Angular", "Node.js", "Express", "MongoDB", "RxJS"],
+    },
+    {
+        role: "Full Stack Developer",
+        company: "Osiz Technologies",
+        desc: "Developed responsive web applications with TypeScript and JavaScript. Deep dive into blockchain tech, Git workflows, and collaborative cross-team development practices.",
+        tags: ["TypeScript", "JavaScript", "Git", "Angular", "Node.js", "Express", "MongoDB", "Bootstrap"],
+    },
 ];
 
 const WHY_ME = [
-  { n: "01", t: "AI-Forward Builder", d: "Actively shipping with LLMs, RAG, and orchestration — not just studying, but building real AI products." },
-  { n: "02", t: "Full Stack Ownership", d: "From React UI to Node APIs to MongoDB — I own the whole stack and reduce handoff friction." },
-  { n: "03", t: "Blockchain Edge", d: "2+ years of Web3/Solidity development gives rare architectural insight into decentralized systems." },
-  { n: "04", t: "Rapid Learner", d: "New stack? Give me a week. I embrace new tech with structured enthusiasm and self-directed initiative." },
-  { n: "05", t: "Collaborative Spirit", d: "Thrives in team environments. Fosters open communication, knowledge sharing, and positive culture." },
-  { n: "06", t: "Code Quality First", d: "Strong problem-solving with meticulous attention to performance, maintainability, and clean architecture." },
+    { n: "01", t: "AI-Forward Builder", d: "Actively shipping with LLMs, RAG, and orchestration — not just studying, but building real AI products." },
+    { n: "02", t: "Full Stack Ownership", d: "From React UI to Node APIs to MongoDB — I own the whole stack and reduce handoff friction." },
+    { n: "03", t: "Blockchain Edge", d: "2+ years of Web3/Solidity development gives rare architectural insight into decentralized systems." },
+    { n: "04", t: "Rapid Learner", d: "New stack? Give me a week. I embrace new tech with structured enthusiasm and self-directed initiative." },
+    { n: "05", t: "Collaborative Spirit", d: "Thrives in team environments. Fosters open communication, knowledge sharing, and positive culture." },
+    { n: "06", t: "Code Quality First", d: "Strong problem-solving with meticulous attention to performance, maintainability, and clean architecture." },
 ];
 
 const TYPEWRITER = [
-  "Full Stack Developer (MEAN)",
-  "AI / LLM Engineer",
-  "Blockchain Developer",
-  "Problem Solver",
-  "Product Builder",
+    "Full Stack Developer (MEAN)",
+    "AI / LLM Engineer",
+    "Blockchain Developer",
+    "Problem Solver",
+    "Product Builder",
 ];
 
 /* ═══════════════════════════════════════════════════════════
    SMART RESUME COMPONENT
 ═══════════════════════════════════════════════════════════ */
 export default function SmartResume() {
-  /* ── State ── */
-  const [stats, setStats] = useState({ views: 1, downloads: 0, contacts: 0 });
-  const [bumping, setBumping] = useState({});
-  const [toasts, setToasts] = useState([]);
-  const [activeSection, setActiveSection] = useState("hero");
-  const [scrolled, setScrolled] = useState(false);
-  const [cName, setCName] = useState("");
-  const [cEmail, setCEmail] = useState("");
-  const [cMsg, setCMsg] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [roleIdx, setRoleIdx] = useState(0);
-  const [displayed, setDisplayed] = useState("");
-  const [isTyping, setIsTyping] = useState(true);
-  const toastId = useRef(0);
+    /* ── State ── */
+    const [stats, setStats] = useState({ views: 0, downloads: 0, contacts: 0 });
+    const [bumping, setBumping] = useState({});
+    const [toasts, setToasts] = useState([]);
+    const [activeSection, setActiveSection] = useState("hero");
+    const [scrolled, setScrolled] = useState(false);
+    const [cName, setCName] = useState("");
+    const [cEmail, setCEmail] = useState("");
+    const [cMsg, setCMsg] = useState("");
+    const [sending, setSending] = useState(false);
+    const [sent, setSent] = useState(false);
+    const [roleIdx, setRoleIdx] = useState(0);
+    const [displayed, setDisplayed] = useState("");
+    const [isTyping, setIsTyping] = useState(true);
+    const [showCoffee, setShowCoffee] = useState(false);
+    const [coffeeAmt, setCoffeeAmt] = useState(99);     // ← add
+    const [coffeeCustom, setCoffeeCustom] = useState(false);  // ← add
+    const [coffeeNote, setCoffeeNote] = useState("");      // ← add
+    const toastId = useRef(0);
 
-  /* ── Inject CSS + Fonts ── */
-  useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap";
-    document.head.appendChild(link);
-    const style = document.createElement("style");
-    style.textContent = STYLES;
-    document.head.appendChild(style);
-    return () => { try { document.head.removeChild(link); document.head.removeChild(style); } catch {} };
-  }, []);
 
-  /* ── Welcome toast ── */
-  useEffect(() => {
-    const t = setTimeout(() => pushToast("Glad you clicked 😊 it’s worth your time 👋 let`s connect if something catches your eye 😉", "✦", "default"), 1600);
-    return () => clearTimeout(t);
-  }, []);
+    const UPI_ID = "roobyrmb-1@okicici";
+    const UPI_NAME = "Rooby Regupathy";
+    // const upiLink = (amt) => `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent("Support Rooby ☕")}`;
+    // const gpayLink = (amt) => `tez://upi/pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR`;
+    // const phonepeLink = (amt) => `phonepe://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR`;
 
-  /* ── Typewriter effect ── */
-  useEffect(() => {
-    const role = TYPEWRITER[roleIdx];
-    let timer;
-    if (isTyping) {
-      if (displayed.length < role.length) {
-        timer = setTimeout(() => setDisplayed(role.slice(0, displayed.length + 1)), 52);
-      } else {
-        timer = setTimeout(() => setIsTyping(false), 1800);
-      }
-    } else {
-      if (displayed.length > 0) {
-        timer = setTimeout(() => setDisplayed(d => d.slice(0, -1)), 28);
-      } else {
-        setRoleIdx(i => (i + 1) % TYPEWRITER.length);
-        setIsTyping(true);
-      }
-    }
-    return () => clearTimeout(timer);
-  }, [displayed, isTyping, roleIdx]);
+    const upiLink = (amt) => `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent(coffeeNote ? `${coffeeNote} | Support Rooby ☕` : "Support Rooby ☕")}`;
+    const gpayLink = (amt) => `tez://upi/pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent(coffeeNote ? `${coffeeNote} | Support Rooby ☕` : "Support Rooby ☕")}`;
+    const phonepeLink = (amt) => `phonepe://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent(coffeeNote ? `${coffeeNote} | Support Rooby ☕` : "Support Rooby ☕")}`;
+    /* ── Inject CSS + Fonts ── */
+    useEffect(() => {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap";
+        document.head.appendChild(link);
+        const style = document.createElement("style");
+        style.textContent = STYLES;
+        document.head.appendChild(style);
+        return () => { try { document.head.removeChild(link); document.head.removeChild(style); } catch { } };
+    }, []);
 
-  /* ── Scroll tracking ── */
-  useEffect(() => {
-    const handler = () => {
-      setScrolled(window.scrollY > 30);
-      const secs = ["hero","about","skills","experience","why","contact","deploy"];
-      for (const id of [...secs].reverse()) {
-        const el = document.getElementById(id);
-        if (el && window.scrollY >= el.offsetTop - 130) { setActiveSection(id); break; }
-      }
+    /* ── Welcome toast ── */
+    // useEffect(() => {
+    //   const t = setTimeout(() => pushToast("Glad you clicked 😊 it’s worth your time 👋 let`s connect if something catches your eye 😉", "✦", "default"), [',k']);
+    //   return () => clearTimeout(t);
+    // }, []);
+
+
+    /* ── Inject CSS + Fonts ── */
+    useEffect(() => {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap";
+        document.head.appendChild(link);
+        const style = document.createElement("style");
+        style.textContent = STYLES;
+        document.head.appendChild(style);
+        return () => { try { document.head.removeChild(link); document.head.removeChild(style); } catch { } };
+    }, []);
+
+    /* ── Welcome toast ── */
+    useEffect(() => {
+        const t = setTimeout(() =>
+            pushToast("Glad you clicked 😊 it's worth your time 👋 let's connect if something catches your eye 😉", "✦", "default")
+            , 900); // ✅ fixed: was [',k'] — must be a number
+        return () => clearTimeout(t);
+    }, []);
+
+    /* ── Track view + notify ── */
+    useEffect(() => {
+        const trackView = async () => {
+            try {
+                const { data } = await supabase
+                    .from('counted').select('*').eq('id', 1).single();
+                if (data) {
+                    const newViews = data.views + 1;
+                    await supabase.from('counted').update({ views: newViews }).eq('id', 1);
+                    setStats(s => ({ ...s, views: newViews, downloads: data.downloads, contacts: data.contacts }));
+                    // 📧 Notify you by email on every view
+                    await sendMail("view_notify", { count: newViews });
+                }
+            } catch (err) {
+                console.warn("[trackView]", err);
+            }
+        };
+        trackView();
+    }, []);
+
+
+    /* ── Typewriter effect ── */
+    useEffect(() => {
+        const role = TYPEWRITER[roleIdx];
+        let timer;
+        if (isTyping) {
+            if (displayed.length < role.length) {
+                timer = setTimeout(() => setDisplayed(role.slice(0, displayed.length + 1)), 52);
+            } else {
+                timer = setTimeout(() => setIsTyping(false), 1800);
+            }
+        } else {
+            if (displayed.length > 0) {
+                timer = setTimeout(() => setDisplayed(d => d.slice(0, -1)), 28);
+            } else {
+                setRoleIdx(i => (i + 1) % TYPEWRITER.length);
+                setIsTyping(true);
+            }
+        }
+        return () => clearTimeout(timer);
+    }, [displayed, isTyping, roleIdx]);
+
+    /* ── Scroll tracking ── */
+    useEffect(() => {
+        const handler = () => {
+            setScrolled(window.scrollY > 30);
+            const secs = ["hero", "about", "skills", "experience", "why", "contact", "deploy"];
+            for (const id of [...secs].reverse()) {
+                const el = document.getElementById(id);
+                if (el && window.scrollY >= el.offsetTop - 130) { setActiveSection(id); break; }
+            }
+        };
+        window.addEventListener("scroll", handler, { passive: true });
+        return () => window.removeEventListener("scroll", handler);
+    }, []);
+
+    /* ── Intersection observer for scroll reveals ── */
+    useEffect(() => {
+        const obs = new IntersectionObserver(
+            entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("vis"); }),
+            { threshold: 0.1 }
+        );
+        const els = document.querySelectorAll(".sr-reveal,.sr-rleft,.sr-rright");
+        els.forEach(el => obs.observe(el));
+        return () => obs.disconnect();
+    });
+
+    /* ── Helpers ── */
+    const pushToast = useCallback((msg, icon = "✦", type = "default") => {
+        const id = ++toastId.current;
+        setToasts(t => [...t, { id, msg, icon, type }]);
+        setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 4500);
+    }, []);
+
+    const bumpStat = (key) => {
+        setBumping(b => ({ ...b, [key]: true }));
+        setTimeout(() => setBumping(b => ({ ...b, [key]: false })), 600);
     };
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
 
-  /* ── Intersection observer for scroll reveals ── */
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("vis"); }),
-      { threshold: 0.1 }
-    );
-    const els = document.querySelectorAll(".sr-reveal,.sr-rleft,.sr-rright");
-    els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  });
+    const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
-  /* ── Helpers ── */
-  const pushToast = useCallback((msg, icon = "✦", type = "default") => {
-    const id = ++toastId.current;
-    setToasts(t => [...t, { id, msg, icon, type }]);
-    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 4500);
-  }, []);
+    /* ── Download + notify ── */
+    const handleDownload = async () => {
+        try {
+            const { data } = await supabase
+                .from('counted').select('downloads').eq('id', 1).single();
+            const newDownloads = data.downloads + 1;
+            await supabase.from('counted').update({ downloads: newDownloads }).eq('id', 1);
+            setStats(s => ({ ...s, downloads: newDownloads }));
+            pushToast(`Resume downloaded — ${newDownloads} total download${newDownloads > 1 ? "s" : ""}`, "⬇", "amber");
+            bumpStat("downloads");
+            // 📧 Notify you by email on every download
+            await sendMail("download_notify", { count: newDownloads });
+        } catch (err) {
+            console.warn("[handleDownload]", err);
+        }
+        // Force download
+        const link = document.createElement('a');
+        link.href = '/public/Rooby_SE_26.pdf';
+        link.download = 'Rooby_Regupathy_Resume.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        // Also open in new tab
+        window.open(' /public/Rooby_SE_26.pdf', '_blank');
+    };
 
-  const bumpStat = (key) => {
-    setBumping(b => ({ ...b, [key]: true }));
-    setTimeout(() => setBumping(b => ({ ...b, [key]: false })), 600);
-  };
+    /* ── Contact form + notify ── */
+    const handleContact = async () => {
+        if (!cName || !cEmail || !cMsg) {
+            pushToast("Please fill all fields.", "⚠", "amber");
+            return;
+        }
+        setSending(true);
+        try {
+            // 📧 Send contact message to you via EmailJS
+            await sendMail("contact", { name: cName, email: cEmail, message: cMsg });
+            // Update contacts count in Supabase
+            const { data } = await supabase
+                .from('counted').select('contacts').eq('id', 1).single();
+            const newContacts = (data?.contacts || 0) + 1;
+            await supabase.from('counted').update({ contacts: newContacts }).eq('id', 1);
+            setStats(s => ({ ...s, contacts: newContacts }));
+            bumpStat("contacts");
+            setSent(true);
+            pushToast(`Message from ${cName} received! I'll reply soon ✓`, "✉", "green");
+            setCName(""); setCEmail(""); setCMsg("");
+            setTimeout(() => setSent(false), 6000);
+        } catch (err) {
+            pushToast("Failed to send. Try again.", "⚠", "amber");
+            console.warn("[handleContact]", err);
+        }
+        setSending(false);
+    }
+    const navItems = [
+        { id: "hero", label: "Home" },
+        { id: "about", label: "About" },
+        { id: "skills", label: "Skills" },
+        { id: "experience", label: "Exp" },
+        { id: "why", label: "Why Me" },
+        { id: "deploy", label: "Services" },
+        { id: "contact", label: "Contact" },
+    ];
 
-  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    /* ══════════════════════════════════════════════════════ */
+    return (
+        <>
+            {/* ── Backgrounds ── */}
+            <div className="sr-gridbg" />
+            <div className="sr-orb sr-orb1" />
+            <div className="sr-orb sr-orb2" />
+            <div className="sr-orb sr-orb3" />
 
-  const handleDownload = () => {
-    setStats(s => {
-      const next = s.downloads + 1;
-      pushToast(`Resume downloaded — ${next} total download${next > 1 ? "s" : ""}`, "⬇", "amber");
-      bumpStat("downloads");
-      return { ...s, downloads: next };
-    });
-    // Swap the comment below with your actual PDF in production:
-    // window.open('/rooby-regupathy-resume.pdf', '_blank');
-  };
+            {/* ── Toast Stack ── */}
+            <div className="sr-toaststack">
+                {toasts.map(t => (
+                    <div key={t.id} className={`sr-toast ${t.type}`}>
+                        <span style={{ fontSize: "1rem", flexShrink: 0 }}>{t.icon}</span>
+                        <span>{t.msg}</span>
+                    </div>
+                ))}
+            </div>
+            {/* ☕ UPI PAYMENT POPUP */}
+            {showCoffee && (
+                <div onClick={() => setShowCoffee(false)} style={{
+                    position: "fixed", inset: 0, zIndex: 9998,
+                    background: "rgba(5,8,16,.88)", backdropFilter: "blur(16px)",
+                    display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem",
+                }}>
+                    <div onClick={e => e.stopPropagation()} style={{
+                        background: "#0c1220", border: "1px solid rgba(245,158,11,.2)",
+                        maxWidth: "380px", width: "100%", padding: "2rem", position: "relative",
+                        boxShadow: "0 0 80px rgba(245,158,11,.06)", maxHeight: "90vh", overflowY: "auto",
+                    }}>
 
-  const handleContact = async () => {
-    if (!cName || !cEmail || !cMsg) { pushToast("Please fill all fields.", "⚠", "amber"); return; }
-    setSending(true);
-    await new Promise(r => setTimeout(r, 1400));
-    setStats(s => {
-      const next = s.contacts + 1;
-      pushToast(`Message from ${cName} received! I'll reply soon ✓`, "✉", "green");
-      bumpStat("contacts");
-      return { ...s, contacts: next };
-    });
-    setSent(true); setSending(false);
-    setCName(""); setCEmail(""); setCMsg("");
-    setTimeout(() => setSent(false), 6000);
-  };
+                        {/* ── Close ── */}
+                        <button onClick={() => setShowCoffee(false)} style={{
+                            position: "absolute", top: "1rem", right: "1rem",
+                            background: "none", border: "none", color: "#334155", fontSize: "1.1rem", cursor: "pointer",
+                        }}>✕</button>
 
-  const navItems = [
-    { id: "hero", label: "Home" },
-    { id: "about", label: "About" },
-    { id: "skills", label: "Skills" },
-    { id: "experience", label: "Exp" },
-    { id: "why", label: "Why Me" },
-    { id: "contact", label: "Contact" },
-    { id: "deploy", label: "Deploy" },
-  ];
+                        {/* ── Title ── */}
+                        <div style={{ fontSize: "1.5rem", marginBottom: ".25rem" }}>☕</div>
+                        <div style={{ fontFamily: "'Outfit',sans-serif", fontWeight: 800, fontSize: "1.1rem", color: "#e2e8f0", marginBottom: ".2rem" }}>
+                            Pay Rooby Regupathy
+                        </div>
 
-  /* ══════════════════════════════════════════════════════ */
-  return (
-    <>
-      {/* ── Backgrounds ── */}
-      <div className="sr-gridbg" />
-      <div className="sr-orb sr-orb1" />
-      <div className="sr-orb sr-orb2" />
-      <div className="sr-orb sr-orb3" />
+                        {/* ── UPI ID row ── */}
+                        <div style={{
+                            display: "flex", alignItems: "center", justifyContent: "space-between",
+                            padding: ".5rem .75rem", marginBottom: "1.25rem",
+                            background: "rgba(0,212,255,.03)", border: "1px solid rgba(0,212,255,.1)",
+                        }}>
+                            <span style={{ fontSize: ".72rem", color: "#00d4ff", letterSpacing: ".03em" }}>{UPI_ID}</span>
+                            <button onClick={() => { navigator.clipboard.writeText(UPI_ID); pushToast("UPI ID copied!", "📋", "default"); }} style={{
+                                background: "rgba(0,212,255,.12)", border: "1px solid rgba(0,212,255,.3)",
+                                color: "#00d4ff", fontSize: ".6rem", padding: ".25rem .65rem", cursor: "pointer",
+                                letterSpacing: ".08em",
+                            }}>Copy ID</button>
+                        </div>
 
-      {/* ── Toast Stack ── */}
-      <div className="sr-toaststack">
-        {toasts.map(t => (
-          <div key={t.id} className={`sr-toast ${t.type}`}>
-            <span style={{ fontSize: "1rem", flexShrink: 0 }}>{t.icon}</span>
-            <span>{t.msg}</span>
-          </div>
-        ))}
-      </div>
+                        {/* ── QR Code (live from UPI amount) ── */}
+                        <div style={{
+                            display: "flex", justifyContent: "center", marginBottom: "1.25rem",
+                            padding: "1rem", background: "#fff", border: "2px solid rgba(245,158,11,.3)",
+                        }}>
+                            <img
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiLink(coffeeAmt || 99))}`}
+                                alt="UPI QR"
+                                width={180} height={180}
+                                style={{ display: "block" }}
+                            />
+                        </div>
 
-      {/* ── Nav ── */}
-      <nav className={`sr-nav${scrolled ? " scrolled" : ""}`}>
-        <div className="sr-logo" onClick={() => scrollTo("hero")}>
-          Rooby<span>.</span>
-        </div>
-        <ul className="sr-navlinks">
-          {navItems.map(n => (
-            <li key={n.id} className={activeSection === n.id ? "active" : ""} onClick={() => scrollTo(n.id)}>
-              {n.label}
-            </li>
-          ))}
-        </ul>
-        <button className="sr-navbtn" onClick={handleDownload}>↓ Resume</button>
-      </nav>
+                        {/* ── Quick amount buttons ── */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".5rem", marginBottom: "1rem" }}>
+                            {[99, 299, 499, "Custom"].map((a) => (
+                                <button key={a} onClick={() => {
+                                    if (a === "Custom") { setCoffeeAmt(""); setCoffeeCustom(true); }
+                                    else { setCoffeeAmt(a); setCoffeeCustom(false); }
+                                }} style={{
+                                    padding: ".5rem .25rem",
+                                    background: coffeeAmt === a ? "rgba(245,158,11,.2)" : "rgba(255,255,255,.03)",
+                                    border: coffeeAmt === a ? "1px solid rgba(245,158,11,.6)" : "1px solid rgba(255,255,255,.07)",
+                                    color: coffeeAmt === a ? "#f59e0b" : "#475569",
+                                    fontSize: ".65rem", cursor: "pointer", letterSpacing: ".04em",
+                                }}>
+                                    {a === "Custom" ? "Custom\nAmount" : `₹${a}`}
+                                </button>
+                            ))}
+                        </div>
 
-      {/* ══════════════════════════════════════════════════════
+                        {/* ── Custom amount input ── */}
+                        {coffeeCustom && (
+                            <input
+                                type="number"
+                                placeholder="Enter amount in ₹ (min ₹50)"
+                                value={coffeeAmt}
+                                onChange={e => {
+                                    const val = Number(e.target.value);
+                                    if (val < 50 && e.target.value !== "") {
+                                        pushToast("Minimum amount is ₹50", "⚠", "amber");
+                                        setCoffeeAmt(50);
+                                    } else {
+                                        setCoffeeAmt(val);
+                                    }
+                                }}
+                                onBlur={e => {
+                                    if (e.target.value && Number(e.target.value) < 50) {
+                                        setCoffeeAmt(50);
+                                    }
+                                }}
+                                style={{
+                                    width: "100%", background: "#0c1220", border: "1px solid rgba(245,158,11,.3)",
+                                    color: "#e2e8f0", fontFamily: "'JetBrains Mono',monospace", fontSize: ".76rem",
+                                    padding: ".65rem .9rem", outline: "none", marginBottom: "1rem",
+                                }}
+                            />
+                        )}
+
+                        {/* ── Leave a note ── */}
+                        <input
+                            type="text"
+                            placeholder="Leave a note (optional)"
+                            value={coffeeNote}
+                            onChange={e => setCoffeeNote(e.target.value)}
+                            style={{
+                                width: "100%", background: "#0c1220", border: "1px solid rgba(255,255,255,.07)",
+                                color: "#e2e8f0", fontFamily: "'JetBrains Mono',monospace", fontSize: ".72rem",
+                                padding: ".6rem .9rem", outline: "none", marginBottom: "1rem",
+                            }}
+                        />
+
+                        {/* ── Pay button / app links ── */}
+                        <div style={{ display: "flex", gap: ".5rem", marginBottom: ".75rem" }}>
+                            {[
+                                { name: "GPay", href: gpayLink(coffeeAmt || 99), color: "#4285F4" },
+                                { name: "PhonePe", href: phonepeLink(coffeeAmt || 99), color: "#5f259f" },
+                                { name: "Any UPI", href: upiLink(coffeeAmt || 99), color: "#f59e0b" },
+                            ].map(btn => (
+                                <a key={btn.name} href={btn.href} style={{
+                                    flex: 1, textAlign: "center", padding: ".6rem .25rem",
+                                    background: "transparent", border: `1px solid ${btn.color}40`,
+                                    color: btn.color, textDecoration: "none", fontSize: ".62rem",
+                                    letterSpacing: ".05em",
+                                }}>{btn.name}</a>
+                            ))}
+                        </div>
+
+                        <div style={{ fontSize: ".58rem", color: "#1e293b", textAlign: "center", letterSpacing: ".06em" }}>
+                            Secure UPI · No fees · Instant transfer
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* ── Nav ── */}
+            <nav className={`sr-nav${scrolled ? " scrolled" : ""}`}>
+                <div className="sr-logo" onClick={() => scrollTo("hero")}>
+                    Rooby<span>.</span>
+                </div>
+                <ul className="sr-navlinks">
+                    {navItems.map(n => (
+                        <li key={n.id} className={activeSection === n.id ? "active" : ""} onClick={() => scrollTo(n.id)}>
+                            {n.label}
+                        </li>
+                    ))}
+                </ul>
+                <button className="sr-navbtn" onClick={handleDownload}>↓ Resume</button>
+            </nav>
+
+            {/* ══════════════════════════════════════════════════════
           PAGE CONTENT
       ══════════════════════════════════════════════════════ */}
-      <div className="sr-page">
+            <div className="sr-page">
 
-        {/* ╔══ HERO ══════════════════════════════════════════╗ */}
-        <section id="hero">
-          <div className="sr-herochip">
-            <span className="sr-livedot" />
-            Open to opportunities
-          </div>
-          <h1 className="sr-heroname">
-            Rooby <span className="acc">Regupathy</span>
-          </h1>
-          <p className="sr-herorole">
-            AI Analyst &amp; Full Stack Engineer — MEAN Stack · Blockchain · LLMs
-          </p>
-          <div className="sr-typerow">
-            <span className="sr-typepre">&gt;_</span>
-            <span className="sr-typetext">{displayed}</span>
-            <span className="sr-cursor" />
-          </div>
-          <div className="sr-heroctas">
-            <button className="sr-btnprimary" onClick={() => scrollTo("contact")}>Let's Talk →</button>
-            <button className="sr-btnoutline" onClick={handleDownload}>↓ Resume PDF</button>
-            <button className="sr-btnoutline" onClick={() => scrollTo("skills")}>View Skills</button>
-          </div>
-          <div className="sr-herotags">
-            {["React","Node.js","MongoDB","LLMs","RAG","Blockchain","GraphQL","Angular","Solidity","Docker"].map(t => (
-              <span key={t} className="sr-herotag">{t}</span>
-            ))}
-          </div>
-          <div className="sr-scrollhint">
-            <div className="sr-scrollline" />
-            Scroll to explore
-          </div>
-        </section>
+                {/* ╔══ HERO ══════════════════════════════════════════╗ */}
+                <section id="hero">
+                    <div className="sr-herochip">
+                        <span className="sr-livedot" />
+                        Open to opportunities
+                    </div>
+                    <h1 className="sr-heroname">
+                        Rooby <span className="acc">Regupathy</span>
+                    </h1>
+                    <p className="sr-herorole">
+                        AI Analyst &amp; Full Stack Engineer — MEAN Stack · Blockchain · LLMs
+                    </p>
+                    <div className="sr-typerow">
+                        <span className="sr-typepre">&gt;_</span>
+                        <span className="sr-typetext">{displayed}</span>
+                        <span className="sr-cursor" />
+                    </div>
+                    <div className="sr-heroctas">
+                        <button className="sr-btnprimary" onClick={() => scrollTo("contact")}>Let's Talk →</button>
+                        <button className="sr-btnoutline" onClick={handleDownload}>↓ Resume PDF</button>
+                        <button className="sr-btnoutline" onClick={() => scrollTo("skills")}>View Skills</button>
+                    </div>
+                    <div className="sr-herotags">
+                        {["React", "Node.js", "MongoDB", "LLMs", "RAG", "Blockchain", "GraphQL", "Angular", "Solidity", "Docker"].map(t => (
+                            <span key={t} className="sr-herotag">{t}</span>
+                        ))}
+                    </div>
+                    <div className="sr-scrollhint">
+                        <div className="sr-scrollline" />
+                        Scroll to explore
+                    </div>
+                </section>
 
-        {/* ╔══ ABOUT ═════════════════════════════════════════╗ */}
-        <section id="about" className="sr-section">
-          <div className="sr-reveal">
-            <div className="sr-eyebrow">01 — About</div>
-            <h2 className="sr-h2">Experienced <span className="c1">Developer</span>,<br />Evolving <span className="c2">AI Engineer</span></h2>
-            <div className="sr-rule" />
-          </div>
-          <div className="sr-aboutgrid">
-            <div className="sr-rleft">
-              <div className="sr-abouttext">
-                <p>I'm an <strong>AI Analyst and Full Stack Developer</strong> with a proven track record in building innovative and scalable web applications. Currently deep in the AI space — working hands-on with <strong>LLMs, RAG pipelines, prompt engineering, and orchestration frameworks</strong>.</p>
-                <p>With <strong>2–3 years of MEAN stack experience</strong>, I've shipped real products across blockchain, web apps, and APIs. I'm a rare bridge between traditional full-stack engineering and modern AI capabilities — able to architect systems that are both technically sound and intelligently augmented.</p>
-                <p>I analyze business needs, translate them into technical requirements, and deliver <strong>high-quality, efficient code</strong>. I thrive in collaborative environments and bring genuine enthusiasm to every new stack or challenge.</p>
-              </div>
-            </div>
-            <div className="sr-rright">
-              <div className="sr-detailcard">
-                {[
-                  ["Focus", "AI + Full Stack"],
-                  ["Experience", "2–3 Years"],
-                  ["Stack", "MEAN + AI/LLMs"],
-                  ["Blockchain", "2+ Years"],
-                  ["Location", "India"],
-                  ["Languages", "JS · TS · PHP"],
-                  ["Status", <span key="s" className="sr-openbadge"><span style={{width:6,height:6,borderRadius:"50%",background:"#22c55e",display:"inline-block"}} />Open to Work</span>],
-                ].map(([k, v]) => (
-                  <div key={k} className="sr-drow">
-                    <span className="sr-dk">{k}</span>
-                    <span className="sr-dv">{v}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+                {/* ╔══ ABOUT ═════════════════════════════════════════╗ */}
+                <section id="about" className="sr-section">
+                    <div className="sr-reveal">
+                        <div className="sr-eyebrow">About</div>
+                        <h2 className="sr-h2">Experienced <span className="c1">Developer</span>,<br />Evolving <span className="c2">AI Engineer</span></h2>
+                        <div className="sr-rule" />
+                    </div>
+                    <div className="sr-aboutgrid">
+                        <div className="sr-rleft">
+                            <div className="sr-abouttext">
+                                <p>I'm an <strong>AI Analyst and Full Stack Developer</strong> with a proven track record in building innovative and scalable web applications. Currently deep in the AI space — working hands-on with <strong>LLMs, RAG pipelines, prompt engineering, and orchestration frameworks</strong>.</p>
+                                <p>With <strong>2–3 years of MEAN stack experience</strong>, I've shipped real products across blockchain, web apps, and APIs. I'm a rare bridge between traditional full-stack engineering and modern AI capabilities — able to architect systems that are both technically sound and intelligently augmented.</p>
+                                <p>I analyze business needs, translate them into technical requirements, and deliver <strong>high-quality, efficient code</strong>. I thrive in collaborative environments and bring genuine enthusiasm to every new stack or challenge.</p>
+                            </div>
+                        </div>
+                        <div className="sr-rright">
+                            <div className="sr-detailcard">
+                                {[
+                                    ["Focus", "AI + Full Stack"],
+                                    ["Experience", "2–3 Years"],
+                                    ["Stack", "MEAN + AI/LLMs"],
+                                    ["Blockchain", "2+ Years"],
+                                    ["Location", "Remote • Worldwide"],
+                                    ["Status", <span key="s" className="sr-openbadge"><span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />Available for Freelance & Consulting Projects</span>],
+                                ].map(([k, v]) => (
+                                    <div key={k} className="sr-drow">
+                                        <span className="sr-dk">{k}</span>
+                                        <span className="sr-dv">{v}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-        {/* ╔══ SKILLS ════════════════════════════════════════╗ */}
-        <section id="skills" className="sr-section">
-          <div className="sr-reveal">
-            <div className="sr-eyebrow">02 — Technical Skills</div>
-            <h2 className="sr-h2">My <span className="c1">Stack</span></h2>
-            <div className="sr-rule" />
-          </div>
-          <div className="sr-reveal">
-            <div className="sr-aibanner">
-              <div className="sr-aiicon">🤖</div>
-              <div className="sr-aitext">
-                <h3>Currently Evolving into AI Engineering</h3>
-                <p>Hands-on with LLMs, RAG pipelines, vector embeddings, prompt engineering, and agent orchestration. Building real AI-powered products — not just studying theory.</p>
-              </div>
-            </div>
-          </div>
-          <div className="sr-skillsgrid">
-            {SKILLS.map((s, i) => (
-              <div key={s.cat} className="sr-skillcard sr-reveal" style={{ transitionDelay: `${i * 0.07}s` }}>
-                <div className="sr-skillcat">{s.cat}</div>
-                <div className="sr-skillchips">
-                  {s.items.map(item => <span key={item} className="sr-chip">{item}</span>)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+                {/* ╔══ SKILLS ════════════════════════════════════════╗ */}
+                <section id="skills" className="sr-section">
+                    <div className="sr-reveal">
+                        <div className="sr-eyebrow">Technical Skills</div>
+                        <h2 className="sr-h2">My <span className="c1">Stack</span></h2>
+                        <div className="sr-rule" />
+                    </div>
+                    <div className="sr-reveal">
+                        <div className="sr-aibanner">
+                            <div className="sr-aiicon">🤖</div>
+                            <div className="sr-aitext">
+                                <h3>Currently Evolving into AI Engineering</h3>
+                                <p>Hands-on with LLMs, RAG pipelines, vector embeddings, prompt engineering, and agent orchestration. Building real AI-powered products — not just studying theory.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="sr-skillsgrid">
+                        {SKILLS.map((s, i) => (
+                            <div key={s.cat} className="sr-skillcard sr-reveal" style={{ transitionDelay: `${i * 0.07}s` }}>
+                                <div className="sr-skillcat">{s.cat}</div>
+                                <div className="sr-skillchips">
+                                    {s.items.map(item => <span key={item} className="sr-chip">{item}</span>)}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
 
-        {/* ╔══ EXPERIENCE ════════════════════════════════════╗ */}
-        <section id="experience" className="sr-section">
-          <div className="sr-reveal">
-            <div className="sr-eyebrow">03 — Experience</div>
-            <h2 className="sr-h2">Work <span className="c1">Timeline</span></h2>
-            <div className="sr-rule" />
-          </div>
-          <div className="sr-timeline">
-            {EXPERIENCE.map((e, i) => (
-              <div key={e.role} className="sr-expitem sr-reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
-                <div className="sr-expperiod">{e.period}</div>
-                <div className="sr-exprole">{e.role}</div>
-                <div className="sr-expco">{e.company}</div>
-                <div className="sr-expdesc">{e.desc}</div>
-                <div className="sr-exptags">
-                  {e.tags.map(t => <span key={t} className="sr-exptag">{t}</span>)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+                {/* ╔══ EXPERIENCE ════════════════════════════════════╗ */}
+                <section id="experience" className="sr-section">
+                    <div className="sr-reveal">
+                        <div className="sr-eyebrow">Career</div>
+                        <h2 className="sr-h2">Work <span className="c1">Experience</span></h2>
+                        <div className="sr-rule" />
+                    </div>
+                    <div className="sr-timeline">
+                        {EXPERIENCE.map((e, i) => (
+                            <div key={e.role} className="sr-expitem sr-reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
+                                <div className="sr-expperiod">{e.period}</div>
+                                <div className="sr-exprole">{e.role}</div>
+                                <div className="sr-expco">{e.company}</div>
+                                <div className="sr-expdesc">{e.desc}</div>
+                                <div className="sr-exptags">
+                                    {e.tags.map(t => <span key={t} className="sr-exptag">{t}</span>)}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
 
-        {/* ╔══ WHY ME ════════════════════════════════════════╗ */}
-        <section id="why" className="sr-section">
-          <div className="sr-reveal">
-            <div className="sr-eyebrow">04 — Why Choose Me</div>
-            <h2 className="sr-h2">What I <span className="c2">Bring</span></h2>
-            <div className="sr-rule" />
-          </div>
-          <div className="sr-whygrid">
-            {WHY_ME.map((w, i) => (
-              <div key={w.n} className="sr-whycard sr-reveal" style={{ transitionDelay: `${i * 0.08}s` }}>
-                <div className="sr-whynum">{w.n}</div>
-                <div className="sr-whytitle">{w.t}</div>
-                <div className="sr-whydesc">{w.d}</div>
-              </div>
-            ))}
-          </div>
-        </section>
+                {/* ╔══ WHY ME ════════════════════════════════════════╗ */}
+                <section id="why" className="sr-section">
+                    <div className="sr-reveal">
+                        <div className="sr-eyebrow">Why Choose Me</div>
+                        <h2 className="sr-h2">What I <span className="c2">Bring</span></h2>
+                        <div className="sr-rule" />
+                    </div>
+                    <div className="sr-whygrid">
+                        {WHY_ME.map((w, i) => (
+                            <div key={w.n} className="sr-whycard sr-reveal" style={{ transitionDelay: `${i * 0.08}s` }}>
+                                <div className="sr-whynum">{w.n}</div>
+                                <div className="sr-whytitle">{w.t}</div>
+                                <div className="sr-whydesc">{w.d}</div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {/* ╔══ DEPLOY GUIDE ══════════════════════════════════╗ */}
+                <section id="deploy" className="sr-section">
+                    <div className="sr-reveal">
+                        <div className="sr-eyebrow">Bring Your Ideas to Life</div>
+                        <h2 className="sr-h2">What I <span className="c1">Build</span></h2>
+                        <div className="sr-rule" />
+                        <p className="sr-deployintro">
+                            This entire portfolio is fully functional 😉.
+                        </p>
+                    </div>
+                    <div className="sr-deploygrid">
+                        {[
+                            {
+                                n: "01",
+                                t: "Need a Modern Developer Portfolio Like This?",
+                                d: "I build premium portfolio websites with responsive UI, smooth animations, resume integration, and deployment support.",
+                                cmd: "Create Your Presence"
+                            },
 
-        {/* ╔══ CONTACT ═══════════════════════════════════════╗ */}
-        <section id="contact" className="sr-section">
-          <div className="sr-reveal">
-            <div className="sr-eyebrow">05 — Get in Touch</div>
-            <h2 className="sr-h2">Let's <span className="c1">Work</span> Together</h2>
-            <div className="sr-rule" />
-          </div>
-          <div className="sr-cgrid">
-            {/* Left: info */}
-            <div className="sr-rleft">
-              <div className="sr-cinfo">
-                <p>Open to full-time roles, freelance projects, and AI/blockchain collaborations. I typically respond within 24 hours. Looking forward to hearing from you.</p>
-              </div>
-              <a href="mailto:rooby.dev22@gmail.com" className="sr-clink" target="_blank" rel="noreferrer">
-                <div className="sr-cicon">✉</div>
-                rooby.dev22@gmail.com
-              </a>
-              <a href="https://www.linkedin.com/in/roobyregupathy" className="sr-clink" target="_blank" rel="noreferrer">
-                <div className="sr-cicon" style={{fontSize:".7rem",fontWeight:700}}>in</div>
-                linkedin.com/in/roobyregupathy
-              </a>
-              <div className="sr-clink">
-                <div className="sr-cicon">📞</div>
-                +91 8610669798
-              </div>
-              <div style={{marginTop:"1.5rem",padding:"1rem 1.1rem",background:"rgba(0,212,255,.03)",border:"1px solid rgba(0,212,255,.1)",fontSize:".68rem",color:"#334155",lineHeight:1.7}}>
+                            {
+                                n: "02",
+                                t: "AI Chatbots & Agents",
+                                d: "I develop custom AI chatbots using Gemini, OpenAI, RAG pipelines, vector search, and intelligent automation workflows.",
+                                cmd: "Scale with AI"
+                            },
+
+                            {
+                                n: "03",
+                                t: "Launching Brands on the Web",
+                                d: "Helping startups, creators, and businesses build a powerful digital presence with modern full stack applications, responsive websites, dashboards, authentication systems, and cloud deployment.",
+                                cmd: "Launch Your Brand"
+                            },
+
+                        ].map(s => (
+                            <div key={s.n} className="sr-deploycard sr-reveal">
+                                <div className="sr-deploynum">{s.n}</div>
+                                <div className="sr-deploytitle">{s.t}</div>
+                                <div className="sr-deploydesc">{s.d}</div>
+                                <div className="sr-deploycmd"><span className="dim"># </span>{s.cmd}</div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="sr-reveal">
+                        <div style={{ fontSize: ".6rem", color: "#334155", letterSpacing: ".14em", textTransform: "uppercase", marginBottom: ".75rem" }}>
+                            Full Production Tech Stack
+                        </div>
+                        <div className="sr-techpills">
+                            {["React + Vite", "Express.js", "MongoDB Atlas", "Vercel (Frontend)", "Render (Backend)", "Formspree (Email)", "Supabase (Analytics)", "Namecheap (Domain)", "OneSignal (Notifications)", "GitHub Actions (CI/CD)"].map(t => (
+                                <span key={t} className="sr-techpill">{t}</span>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* ╔══ CONTACT ═══════════════════════════════════════╗ */}
+                <section id="contact" className="sr-section">
+                    <div className="sr-reveal">
+                        <div className="sr-eyebrow">Get in Touch</div>
+                        <h2 className="sr-h2">Let's <span className="c1">Work</span> Together</h2>
+                        <div className="sr-rule" />
+                    </div>
+                    <div className="sr-cgrid">
+                        {/* Left: info */}
+                        <div className="sr-rleft">
+                            <div className="sr-cinfo">
+                                <p>Open to full-time roles, freelance projects, and AI collaborations. I typically respond within 24 hours. Looking forward to hearing from you.</p>
+                            </div>
+                            <a href="mailto:rooby.dev22@gmail.com" className="sr-clink" target="_blank" rel="noreferrer">
+                                <div className="sr-cicon">✉</div>
+                                rooby.dev22@gmail.com
+                            </a>
+                            <a href="https://www.linkedin.com/in/roobyregupathy" className="sr-clink" target="_blank" rel="noreferrer">
+                                <div className="sr-cicon" style={{ fontSize: ".7rem", fontWeight: 700 }}>in</div>
+                                linkedin.com/in/roobyregupathy
+                            </a>
+                            <div className="sr-clink">
+                                <div className="sr-cicon">📞</div>
+                                +91 8610669798
+                            </div>
+                            <div
+                                style={{
+                                    marginTop: "1.5rem",
+                                    padding: "1rem 1.1rem",
+                                    background: "rgba(0,212,255,.03)",
+                                    border: "1px solid rgba(0,212,255,.1)",
+                                    fontSize: ".68rem",
+                                    color: "#334155",
+                                    lineHeight: 1.7
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        color: "#00d4ff",
+                                        letterSpacing: ".1em",
+                                        textTransform: "uppercase",
+                                        fontSize: ".58rem"
+                                    }}
+                                >
+                                    Support My Work
+                                </span>
+                                <br />
+                                Enjoyed this portfolio ? <br />
+                                You can support my journey with a coffee ☕
+                                Every contribution helps me build more AI tools, web experiences, and creative projects.
+                                <br />
+                                <a href="#" onClick={e => { e.preventDefault(); setShowCoffee(true); }}
+                                    style={{ color: "#f59e0b", textDecoration: "none", fontWeight: 600 }}>
+                                    → Buy Me a Coffee ☕
+                                </a>
+                            </div>
+                            {/* <div style={{marginTop:"1.5rem",padding:"1rem 1.1rem",background:"rgba(0,212,255,.03)",border:"1px solid rgba(0,212,255,.1)",fontSize:".68rem",color:"#334155",lineHeight:1.7}}>
                 <span style={{color:"#00d4ff",letterSpacing:".1em",textTransform:"uppercase",fontSize:".58rem"}}>Note for Production</span><br/>
                 Wire up a real email via <span style={{color:"#f59e0b"}}>Formspree</span> or <span style={{color:"#f59e0b"}}>EmailJS</span> (both free). Replace the handleContact function with a fetch POST to your endpoint.
-              </div>
-            </div>
+              </div> */}
+                        </div>
 
-            {/* Right: form */}
-            <div className="sr-rright">
-              {sent ? (
-                <div className="sr-sentmsg">
-                  ✓ Message sent successfully!<br/>
-                  I'll reply to you within 24 hours.<br/>
-                  Looking forward to connecting, {cName || "friend"}!
+                        {/* Right: form */}
+                        <div className="sr-rright">
+                            {sent ? (
+                                <div className="sr-sentmsg">
+                                    ✓ Message sent successfully!<br />
+                                    I'll reply to you within 24 hours.<br />
+                                    Looking forward to connecting, {cName || "friend"}!
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="sr-form-group">
+                                        <label className="sr-flabel">Your Name</label>
+                                        <input className="sr-finput" value={cName} onChange={e => setCName(e.target.value)} placeholder="Jane Smith" />
+                                    </div>
+                                    <div className="sr-form-group">
+                                        <label className="sr-flabel">Email Address</label>
+                                        <input className="sr-finput" type="email" value={cEmail} onChange={e => setCEmail(e.target.value)} placeholder="jane@company.com" />
+                                    </div>
+                                    <div className="sr-form-group">
+                                        <label className="sr-flabel">Message</label>
+                                        <textarea className="sr-ftextarea" value={cMsg} onChange={e => setCMsg(e.target.value)} placeholder="Tell me about the role or project…" />
+                                    </div>
+                                    <button className="sr-btnsend" onClick={handleContact} disabled={sending}>
+                                        {sending ? "Sending…" : "Send Message →"}
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </section>
+
+
+                {/* ── Footer ── */}
+                <footer className="sr-footer">
+                    <div>© 2025 Rooby Regupathy · portfolio </div>
+                    <div className="sr-flinks">
+                        <a href="mailto:rooby.dev22@gmail.com">Email</a>
+                        <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer">LinkedIn</a>
+                        <span onClick={handleDownload}>Resume PDF</span>
+                    </div>
+                </footer>
+
+            </div>{/* end sr-page */}
+
+            {/* ╔══ STATS BAR (fixed bottom) ══════════════════════╗ */}
+            <div className="sr-statsbar">
+                <div className="sr-stat">
+                    <span>👁</span>
+                    <span className="sr-stat-lbl">Views</span>
+                    <span className={`sr-stat-val${bumping.views ? " bump" : ""}`}>{stats.views}</span>
                 </div>
-              ) : (
-                <>
-                  <div className="sr-form-group">
-                    <label className="sr-flabel">Your Name</label>
-                    <input className="sr-finput" value={cName} onChange={e => setCName(e.target.value)} placeholder="Jane Smith" />
-                  </div>
-                  <div className="sr-form-group">
-                    <label className="sr-flabel">Email Address</label>
-                    <input className="sr-finput" type="email" value={cEmail} onChange={e => setCEmail(e.target.value)} placeholder="jane@company.com" />
-                  </div>
-                  <div className="sr-form-group">
-                    <label className="sr-flabel">Message</label>
-                    <textarea className="sr-ftextarea" value={cMsg} onChange={e => setCMsg(e.target.value)} placeholder="Tell me about the role or project…" />
-                  </div>
-                  <button className="sr-btnsend" onClick={handleContact} disabled={sending}>
-                    {sending ? "Sending…" : "Send Message →"}
-                  </button>
-                </>
-              )}
+                <div className="sr-stat">
+                    <span>⬇</span>
+                    <span className="sr-stat-lbl">Downloads</span>
+                    <span className={`sr-stat-val${bumping.downloads ? " bump" : ""}`}>{stats.downloads}</span>
+                </div>
+                <div className="sr-stat">
+                    <span>✉</span>
+                    <span className="sr-stat-lbl">Messages</span>
+                    <span className={`sr-stat-val${bumping.contacts ? " bump" : ""}`}>{stats.contacts}</span>
+                </div>
+                <div className="sr-liverow">
+                    <div className="sr-livedot" />
+                    <span className="sr-livelbl">LIVE</span>
+                </div>
+                <div className="sr-barright">rooby.dev22@gmail.com · linkedin.com/in/roobyregupathy</div>
             </div>
-          </div>
-        </section>
+        </>
+    );
 
-        {/* ╔══ DEPLOY GUIDE ══════════════════════════════════╗ */}
-        <section id="deploy" className="sr-section">
-          <div className="sr-reveal">
-            <div className="sr-eyebrow">06 — Ship It Live</div>
-            <h2 className="sr-h2">Deploy <span className="c1">Guide</span></h2>
-            <div className="sr-rule" />
-            <p className="sr-deployintro">
-              Take this Smart Resume from demo to a live site with your own domain in under 30 minutes — using entirely free tools. Here's the exact path.
-            </p>
-          </div>
-          <div className="sr-deploygrid">
-            {[
-              { n:"01", t:"Export & Setup", d:"Download this React source. Add your real resume PDF at /public/resume.pdf. Customize name, data, and colors.", cmd:"npm create vite@latest smart-resume -- --template react" },
-              { n:"02", t:"Push to GitHub", d:"Initialize git, commit everything, push to a new GitHub repo. This becomes your source of truth.", cmd:"git init && git add . && git push origin main" },
-              { n:"03", t:"Deploy on Vercel", d:"Connect your GitHub repo at vercel.com. Every git push auto-deploys. Free forever on the Hobby plan.", cmd:"npx vercel --prod" },
-              { n:"04", t:"Custom Domain", d:"Buy a .dev or .io domain (~₹800/yr on Namecheap). Add it in Vercel dashboard. HTTPS is automatic.", cmd:"vercel domains add yourname.dev" },
-              { n:"05", t:"Real Contact Form", d:"Sign up at formspree.io (free, 50 msgs/mo). Replace handleContact with a fetch POST to your endpoint.", cmd:"fetch('https://formspree.io/f/YOUR_ID', {method:'POST'})" },
-              { n:"06", t:"Persistent Analytics", d:"Add Supabase free tier for real view/download counters that persist across all visitors — not just per session.", cmd:"npm install @supabase/supabase-js" },
-            ].map(s => (
-              <div key={s.n} className="sr-deploycard sr-reveal">
-                <div className="sr-deploynum">{s.n}</div>
-                <div className="sr-deploytitle">{s.t}</div>
-                <div className="sr-deploydesc">{s.d}</div>
-                <div className="sr-deploycmd"><span className="dim">$ </span>{s.cmd}</div>
-              </div>
-            ))}
-          </div>
-          <div className="sr-reveal">
-            <div style={{fontSize:".6rem",color:"#334155",letterSpacing:".14em",textTransform:"uppercase",marginBottom:".75rem"}}>
-              Full Production Tech Stack
-            </div>
-            <div className="sr-techpills">
-              {["React + Vite","Express.js","MongoDB Atlas","Vercel (Frontend)","Render (Backend)","Formspree (Email)","Supabase (Analytics)","Namecheap (Domain)","OneSignal (Notifications)","GitHub Actions (CI/CD)"].map(t => (
-                <span key={t} className="sr-techpill">{t}</span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Footer ── */}
-        <footer className="sr-footer">
-          <div>© 2025 Rooby Regupathy · portfolio </div>
-          <div className="sr-flinks">
-            <a href="mailto:rooby.dev22@gmail.com">Email</a>
-            <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer">LinkedIn</a>
-            <span onClick={handleDownload}>Resume PDF</span>
-          </div>
-        </footer>
-
-      </div>{/* end sr-page */}
-
-      {/* ╔══ STATS BAR (fixed bottom) ══════════════════════╗ */}
-      <div className="sr-statsbar">
-        <div className="sr-stat">
-          <span>👁</span>
-          <span className="sr-stat-lbl">Views</span>
-          <span className={`sr-stat-val${bumping.views ? " bump" : ""}`}>{stats.views}</span>
-        </div>
-        <div className="sr-stat">
-          <span>⬇</span>
-          <span className="sr-stat-lbl">Downloads</span>
-          <span className={`sr-stat-val${bumping.downloads ? " bump" : ""}`}>{stats.downloads}</span>
-        </div>
-        <div className="sr-stat">
-          <span>✉</span>
-          <span className="sr-stat-lbl">Messages</span>
-          <span className={`sr-stat-val${bumping.contacts ? " bump" : ""}`}>{stats.contacts}</span>
-        </div>
-        <div className="sr-liverow">
-          <div className="sr-livedot" />
-          <span className="sr-livelbl">LIVE</span>
-        </div>
-        <div className="sr-barright">rooby.dev22@gmail.com · linkedin.com/in/roobyregupathy</div>
-      </div>
-    </>
-  );
 }
