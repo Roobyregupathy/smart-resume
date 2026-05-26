@@ -6,17 +6,16 @@ import { createClient } from '@supabase/supabase-js';
    CONFIG
 ═══════════════════════════════════════════════════════════ */
 const supabase = createClient(
-    "https://glkbdepkpgarxccyllyh.supabase.co",
-    "sb_publishable_AWelGsWATsWh2OFHEZDsRg_5oOPbrQm"
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_KEY
 );
 const EJS = {
-    service: "service_v60ojpb",
-    template: "template_xh2ko6i",
-    pubKey: "Q2o0ch1M3vDXHxutj",
+  service:  import.meta.env.VITE_EJS_SERVICE,
+  template: import.meta.env.VITE_EJS_TEMPLATE,
+  pubKey:   import.meta.env.VITE_EJS_PUBKEY,
 };
-const UPI_ID = "roobyrmb-1@okicici";
-const UPI_NAME = "Rooby Regupathy";
-
+const UPI_ID   = import.meta.env.VITE_UPI_ID;
+const UPI_NAME = import.meta.env.VITE_UPI_NAME;
 /* ═══════════════════════════════════════════════════════════
    MAIL MIDDLEWARE
    Centralised — call sendMail(type, payload) anywhere
@@ -439,17 +438,7 @@ export default function SmartResume() {
         return () => { try { document.head.removeChild(link); document.head.removeChild(style); } catch { } };
     }, []);
 
-    /* ── Inject CSS + Fonts ── */
-    useEffect(() => {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap";
-        document.head.appendChild(link);
-        const style = document.createElement("style");
-        style.textContent = STYLES;
-        document.head.appendChild(style);
-        return () => { try { document.head.removeChild(link); document.head.removeChild(style); } catch { } };
-    }, []);
+
 
     /* ── Welcome toast ── */
     useEffect(() => {
@@ -580,7 +569,7 @@ export default function SmartResume() {
         link.click();
         document.body.removeChild(link);
         // Also open in new tab
-        window.open(' /public/Rooby_SE_26.pdf', '_blank');
+        window.open('/Rooby_SE_26.pdf', '_blank');
     };
 
     /* ── Contact form + notify ── */
