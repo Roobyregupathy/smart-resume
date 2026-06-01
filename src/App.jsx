@@ -752,16 +752,7 @@ export default function SmartResume() {
                             </div>
                         ))}
                     </div>
-                    <div className="sr-reveal">
-                        <div style={{ fontSize: ".6rem", color: "#334155", letterSpacing: ".14em", textTransform: "uppercase", marginBottom: ".75rem" }}>
-                            Full Production Tech Stack
-                        </div>
-                        <div className="sr-techpills">
-                            {["React + Vite", "Express.js", "MongoDB Atlas", "Vercel (Frontend)", "Render (Backend)", "Formspree (Email)", "Supabase (Analytics)", "Namecheap (Domain)", "OneSignal (Notifications)", "GitHub Actions (CI/CD)"].map(t => (
-                                <span key={t} className="sr-techpill">{t}</span>
-                            ))}
-                        </div>
-                    </div>
+
                 </section>
 
                 {/* ╔══ CONTACT ═══════════════════════════════════════╗ */}
