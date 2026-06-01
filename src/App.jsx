@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
+import "./global.css";
 import emailjs from '@emailjs/browser';
 import { createClient } from '@supabase/supabase-js';
 
@@ -6,15 +7,15 @@ import { createClient } from '@supabase/supabase-js';
    CONFIG
 ═══════════════════════════════════════════════════════════ */
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_KEY
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_KEY
 );
 const EJS = {
-  service:  import.meta.env.VITE_EJS_SERVICE,
-  template: import.meta.env.VITE_EJS_TEMPLATE,
-  pubKey:   import.meta.env.VITE_EJS_PUBKEY,
+    service: import.meta.env.VITE_EJS_SERVICE,
+    template: import.meta.env.VITE_EJS_TEMPLATE,
+    pubKey: import.meta.env.VITE_EJS_PUBKEY,
 };
-const UPI_ID   = import.meta.env.VITE_UPI_ID;
+const UPI_ID = import.meta.env.VITE_UPI_ID;
 const UPI_NAME = import.meta.env.VITE_UPI_NAME;
 /* ═══════════════════════════════════════════════════════════
    MAIL MIDDLEWARE
@@ -58,295 +59,6 @@ const sendMail = async (type, payload = {}) => {
         console.warn(`[sendMail] ${type} failed:`, err);
     }
 };
-
-/* ═══════════════════════════════════════════════════════════
-   GLOBAL CSS — injected into <head>
-═══════════════════════════════════════════════════════════ */
-const STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap');
-
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'JetBrains Mono',monospace;background:#050810;color:#cdd6f4;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:#050810}
-::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#00d4ff,#f59e0b)}
-
-/* ── Background ── */
-.sr-gridbg{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(0,212,255,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,212,255,.035) 1px,transparent 1px);
-  background-size:72px 72px;
-}
-.sr-orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(100px)}
-.sr-orb1{width:700px;height:700px;background:rgba(0,212,255,.055);top:-250px;right:-200px}
-.sr-orb2{width:500px;height:500px;background:rgba(245,158,11,.04);bottom:0;left:-150px}
-.sr-orb3{width:300px;height:300px;background:rgba(139,92,246,.04);top:50%;left:40%}
-
-/* ── Nav ── */
-.sr-nav{
-  position:fixed;top:0;left:0;right:0;z-index:1000;height:58px;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 2.5rem;
-  background:rgba(5,8,16,.88);backdrop-filter:blur(18px) saturate(200%);
-  border-bottom:1px solid rgba(0,212,255,.1);
-  transition:box-shadow .3s;
-}
-.sr-nav.scrolled{box-shadow:0 4px 40px rgba(0,212,255,.1)}
-.sr-logo{font-family:'Outfit',sans-serif;font-weight:900;font-size:1.25rem;cursor:pointer;letter-spacing:-.02em;color:#e2e8f0}
-.sr-logo span{color:#00d4ff}
-.sr-navlinks{display:flex;gap:1.75rem;list-style:none}
-.sr-navlinks li{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#475569;cursor:pointer;transition:color .2s;padding:.25rem 0;position:relative}
-.sr-navlinks li::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:#00d4ff;transform:scaleX(0);transition:transform .2s}
-.sr-navlinks li:hover,.sr-navlinks li.active{color:#00d4ff}
-.sr-navlinks li.active::after,.sr-navlinks li:hover::after{transform:scaleX(1)}
-.sr-navbtn{
-  font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
-  border:1px solid #00d4ff;color:#00d4ff;background:transparent;
-  padding:.4rem 1.1rem;cursor:pointer;transition:all .2s;
-}
-.sr-navbtn:hover{background:#00d4ff;color:#050810;box-shadow:0 0 24px rgba(0,212,255,.35)}
-
-/* ── Stats bar (bottom) ── */
-.sr-statsbar{
-  position:fixed;bottom:0;left:0;right:0;z-index:1000;
-  height:38px;display:flex;align-items:center;
-  background:rgba(5,8,16,.96);border-top:1px solid rgba(0,212,255,.08);
-  font-size:.63rem;letter-spacing:.08em;overflow:hidden;
-}
-.sr-stat{display:flex;align-items:center;gap:.45rem;padding:0 1.25rem;border-right:1px solid rgba(0,212,255,.07);height:100%}
-.sr-stat-lbl{color:#334155}
-.sr-stat-val{color:#00d4ff;font-weight:500;min-width:1.2rem;transition:all .3s}
-.sr-stat-val.bump{color:#f59e0b;transform:scale(1.2)}
-.sr-liverow{display:flex;align-items:center;gap:.5rem;padding:0 1.25rem}
-.sr-livedot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:srpulse 2s infinite;flex-shrink:0}
-.sr-livelbl{color:#22c55e;font-size:.6rem;letter-spacing:.15em}
-.sr-barright{margin-left:auto;padding:0 1.5rem;color:#1e293b;font-size:.58rem;letter-spacing:.06em}
-
-@keyframes srpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}
-
-/* ── Toasts ── */
-.sr-toaststack{position:fixed;top:4.2rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:.45rem;pointer-events:none;max-width:300px}
-.sr-toast{
-  display:flex;align-items:center;gap:.6rem;
-  background:#0c1220;border:1px solid rgba(0,212,255,.18);border-left:3px solid #00d4ff;
-  padding:.6rem .95rem;font-size:.68rem;color:#cdd6f4;
-  animation:srtoastin .4s cubic-bezier(.22,1,.36,1);
-  box-shadow:0 8px 40px rgba(0,0,0,.5);letter-spacing:.03em;
-}
-.sr-toast.amber{border-left-color:#f59e0b}
-.sr-toast.green{border-left-color:#22c55e}
-@keyframes srtoastin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
-
-/* ── Page wrapper ── */
-.sr-page{position:relative;z-index:1}
-.sr-section{max-width:1060px;margin:0 auto;padding:5.5rem 2rem}
-
-/* ── Scroll reveals ── */
-.sr-reveal{opacity:0;transform:translateY(30px);transition:opacity .75s ease,transform .75s ease}
-.sr-reveal.vis{opacity:1;transform:none}
-.sr-rleft{opacity:0;transform:translateX(-30px);transition:opacity .75s ease,transform .75s ease}
-.sr-rleft.vis{opacity:1;transform:none}
-.sr-rright{opacity:0;transform:translateX(30px);transition:opacity .75s ease,transform .75s ease}
-.sr-rright.vis{opacity:1;transform:none}
-
-/* ── Section typography ── */
-.sr-eyebrow{font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;color:#00d4ff;margin-bottom:.6rem}
-.sr-h2{font-family:'Outfit',sans-serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:800;color:#e2e8f0;line-height:1.1;letter-spacing:-.02em;margin-bottom:.75rem}
-.sr-h2 .c1{color:#00d4ff}
-.sr-h2 .c2{color:#f59e0b}
-.sr-rule{width:38px;height:2px;background:linear-gradient(90deg,#00d4ff,#f59e0b);margin:.6rem 0 2.25rem}
-
-/* ══ HERO ══ */
-#hero{
-  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
-  padding:7rem 2rem 6rem;max-width:1060px;margin:0 auto;position:relative;
-}
-.sr-herochip{
-  display:inline-flex;align-items:center;gap:.5rem;margin-bottom:1.5rem;
-  border:1px solid rgba(0,212,255,.25);padding:.28rem .8rem;
-  font-size:.62rem;letter-spacing:.15em;color:#00d4ff;text-transform:uppercase;
-  background:rgba(0,212,255,.04);
-}
-.sr-heroname{
-  font-family:'Outfit',sans-serif;font-size:clamp(3.2rem,11vw,7.5rem);
-  font-weight:900;line-height:1;letter-spacing:-.03em;color:#e2e8f0;margin-bottom:.4rem;
-}
-.sr-heroname .acc{color:#00d4ff}
-.sr-herorole{font-size:clamp(.8rem,2vw,1rem);color:#64748b;letter-spacing:.04em;margin-bottom:.75rem;line-height:1.6;max-width:580px}
-.sr-typerow{display:flex;align-items:center;gap:.5rem;margin-bottom:2.75rem;min-height:1.8rem}
-.sr-typepre{font-size:.78rem;color:#1e3a4a;user-select:none}
-.sr-typetext{font-size:clamp(.88rem,2.2vw,1.1rem);color:#f59e0b;letter-spacing:.03em}
-.sr-cursor{display:inline-block;width:2px;height:1em;background:#f59e0b;margin-left:2px;animation:srblink 1s step-end infinite;vertical-align:middle}
-@keyframes srblink{0%,100%{opacity:1}50%{opacity:0}}
-.sr-heroctas{display:flex;gap:.85rem;flex-wrap:wrap;margin-bottom:2.75rem}
-.sr-btnprimary{
-  font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
-  background:#00d4ff;color:#050810;padding:.78rem 2rem;border:none;cursor:pointer;font-weight:500;
-  transition:all .2s;
-}
-.sr-btnprimary:hover{background:#33ddff;box-shadow:0 0 32px rgba(0,212,255,.45);transform:translateY(-2px)}
-.sr-btnoutline{
-  font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
-  background:transparent;color:#94a3b8;padding:.78rem 2rem;border:1px solid rgba(255,255,255,.12);cursor:pointer;
-  transition:all .2s;
-}
-.sr-btnoutline:hover{border-color:#94a3b8;color:#e2e8f0;transform:translateY(-2px)}
-.sr-herotags{display:flex;flex-wrap:wrap;gap:.4rem}
-.sr-herotag{font-size:.6rem;letter-spacing:.07em;border:1px solid rgba(0,212,255,.15);padding:.2rem .55rem;color:#334155;background:rgba(0,212,255,.02)}
-.sr-scrollhint{
-  position:absolute;bottom:1.75rem;left:2rem;
-  display:flex;align-items:center;gap:.75rem;
-  font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:#1e293b;
-}
-.sr-scrollline{width:44px;height:1px;background:rgba(0,212,255,.12);position:relative;overflow:hidden}
-.sr-scrollline::after{content:'';position:absolute;inset:0;background:#00d4ff;transform:translateX(-100%);animation:srscan 2.8s ease-in-out infinite}
-@keyframes srscan{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-
-/* ══ ABOUT ══ */
-.sr-aboutgrid{display:grid;grid-template-columns:1.3fr 1fr;gap:4rem;align-items:start}
-.sr-abouttext p{font-size:.8rem;line-height:2;color:#94a3b8;margin-bottom:.9rem}
-.sr-abouttext strong{color:#e2e8f0;font-weight:500}
-.sr-detailcard{background:rgba(0,212,255,.03);border:1px solid rgba(0,212,255,.1);padding:1.4rem}
-.sr-drow{display:flex;justify-content:space-between;align-items:center;padding:.62rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.7rem}
-.sr-drow:last-child{border-bottom:none}
-.sr-dk{color:#334155;letter-spacing:.07em}
-.sr-dv{color:#e2e8f0;text-align:right}
-.sr-openbadge{display:inline-flex;align-items:center;gap:.4rem;color:#22c55e;font-size:.62rem;border:1px solid rgba(34,197,94,.25);padding:.15rem .5rem}
-
-/* ══ SKILLS ══ */
-.sr-aibanner{
-  background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(245,158,11,.04));
-  border:1px solid rgba(0,212,255,.14);padding:1.4rem 1.75rem;margin-bottom:2rem;
-  display:flex;align-items:center;gap:1.4rem;
-}
-.sr-aiicon{font-size:2.4rem;flex-shrink:0}
-.sr-aitext h3{font-family:'Outfit',sans-serif;font-size:1.05rem;font-weight:700;color:#00d4ff;margin-bottom:.25rem}
-.sr-aitext p{font-size:.72rem;color:#475569;line-height:1.65}
-.sr-skillsgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1.1rem}
-.sr-skillcard{
-  background:#0c1220;border:1px solid rgba(255,255,255,.05);
-  padding:1.3rem;transition:border-color .3s,transform .3s;
-}
-.sr-skillcard:hover{border-color:rgba(0,212,255,.3);transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,212,255,.06)}
-.sr-skillcat{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:#f59e0b;margin-bottom:.85rem}
-.sr-skillchips{display:flex;flex-wrap:wrap;gap:.4rem}
-.sr-chip{font-size:.63rem;padding:.2rem .55rem;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.13);color:#64748b;cursor:default;transition:all .2s}
-.sr-chip:hover{background:rgba(0,212,255,.12);color:#00d4ff;border-color:rgba(0,212,255,.4)}
-
-/* ══ EXPERIENCE ══ */
-.sr-timeline{padding-left:0}
-.sr-expitem{position:relative;padding-left:2.25rem;padding-bottom:2.75rem;border-left:1px solid rgba(0,212,255,.13);transition:border-color .3s}
-.sr-expitem:last-child{padding-bottom:0}
-.sr-expitem:hover{border-color:rgba(0,212,255,.35)}
-.sr-expitem::before{
-  content:'';position:absolute;left:-5px;top:0;
-  width:9px;height:9px;border:2px solid #00d4ff;border-radius:50%;
-  background:#050810;box-shadow:0 0 12px rgba(0,212,255,.5);
-}
-.sr-expperiod{font-size:.6rem;letter-spacing:.1em;color:#00d4ff;text-transform:uppercase;margin-bottom:.35rem}
-.sr-exprole{font-family:'Outfit',sans-serif;font-size:1.25rem;font-weight:700;color:#e2e8f0;margin-bottom:.2rem;line-height:1.2}
-.sr-expco{font-size:.7rem;color:#f59e0b;letter-spacing:.05em;margin-bottom:.65rem}
-.sr-expdesc{font-size:.75rem;line-height:1.85;color:#64748b}
-.sr-exptags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.65rem}
-.sr-exptag{font-size:.58rem;padding:.15rem .48rem;border:1px solid rgba(255,255,255,.06);color:#334155;letter-spacing:.05em}
-
-/* ══ WHY ME ══ */
-.sr-whygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1.1rem}
-.sr-whycard{
-  background:#0c1220;border:1px solid rgba(255,255,255,.05);
-  padding:1.4rem;position:relative;overflow:hidden;transition:border-color .3s;
-}
-.sr-whycard::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,#00d4ff,#f59e0b);
-  transform:scaleX(0);transform-origin:left;transition:transform .35s;
-}
-.sr-whycard:hover{border-color:rgba(0,212,255,.2)}
-.sr-whycard:hover::before{transform:scaleX(1)}
-.sr-whynum{font-family:'Outfit',sans-serif;font-size:3rem;font-weight:900;color:rgba(0,212,255,.07);line-height:1;margin-bottom:.35rem}
-.sr-whytitle{font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:700;color:#e2e8f0;margin-bottom:.4rem}
-.sr-whydesc{font-size:.68rem;color:#475569;line-height:1.75}
-
-/* ══ CONTACT ══ */
-.sr-cgrid{display:grid;grid-template-columns:1fr 1.5fr;gap:4rem}
-.sr-cinfo p{font-size:.78rem;color:#64748b;line-height:1.85;margin-bottom:1.75rem}
-.sr-clink{
-  display:flex;align-items:center;gap:.75rem;
-  font-size:.72rem;color:#475569;text-decoration:none;
-  margin-bottom:.85rem;cursor:pointer;transition:color .2s;
-}
-.sr-clink:hover{color:#00d4ff}
-.sr-cicon{
-  width:34px;height:34px;border:1px solid rgba(0,212,255,.13);
-  display:flex;align-items:center;justify-content:center;
-  font-size:.85rem;flex-shrink:0;background:rgba(0,212,255,.03);
-  transition:border-color .2s,background .2s;
-}
-.sr-clink:hover .sr-cicon{border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.07)}
-.sr-flabel{display:block;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:#334155;margin-bottom:.4rem}
-.sr-finput,.sr-ftextarea{
-  width:100%;background:#0c1220;border:1px solid rgba(255,255,255,.07);
-  color:#e2e8f0;font-family:'JetBrains Mono',monospace;font-size:.76rem;
-  padding:.68rem .9rem;outline:none;transition:border-color .2s,box-shadow .2s;
-  margin-bottom:1rem;
-}
-.sr-finput:focus,.sr-ftextarea:focus{border-color:rgba(0,212,255,.4);box-shadow:0 0 0 1px rgba(0,212,255,.12)}
-.sr-ftextarea{resize:none;height:105px}
-.sr-btnsend{
-  width:100%;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.12em;
-  text-transform:uppercase;background:linear-gradient(90deg,#00d4ff,#0099bb);
-  color:#050810;padding:.85rem;border:none;cursor:pointer;font-weight:500;
-  transition:all .25s;
-}
-.sr-btnsend:hover:not(:disabled){box-shadow:0 0 32px rgba(0,212,255,.35);transform:translateY(-2px)}
-.sr-btnsend:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.sr-sentmsg{
-  padding:.9rem;border:1px solid rgba(34,197,94,.25);color:#22c55e;
-  font-size:.7rem;letter-spacing:.07em;text-align:center;
-  background:rgba(34,197,94,.04);line-height:1.6;
-}
-
-/* ══ DEPLOY ══ */
-.sr-deployintro{font-size:.78rem;color:#64748b;line-height:1.85;max-width:600px;margin-bottom:2.25rem}
-.sr-deploygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1.1rem;margin-bottom:2.25rem}
-.sr-deploycard{background:#0c1220;border:1px solid rgba(255,255,255,.05);padding:1.3rem;position:relative}
-.sr-deploynum{font-family:'Outfit',sans-serif;font-size:2.5rem;font-weight:900;color:rgba(0,212,255,.08);line-height:1}
-.sr-deploytitle{font-size:.82rem;font-family:'Outfit',sans-serif;font-weight:700;color:#e2e8f0;margin:.4rem 0 .35rem}
-.sr-deploydesc{font-size:.65rem;color:#475569;line-height:1.7}
-.sr-deploycmd{background:#050810;border:1px solid rgba(0,212,255,.1);padding:.7rem .9rem;margin-top:.6rem;font-size:.62rem;color:#00d4ff;font-family:'JetBrains Mono',monospace;overflow:auto;white-space:nowrap}
-.sr-deploycmd .dim{color:#1e3a4a}
-.sr-techpills{display:flex;flex-wrap:wrap;gap:.45rem}
-.sr-techpill{font-size:.6rem;padding:.25rem .7rem;border:1px solid rgba(245,158,11,.18);color:#92400e;background:rgba(245,158,11,.04);letter-spacing:.06em}
-
-/* ══ FOOTER ══ */
-.sr-footer{
-  border-top:1px solid rgba(255,255,255,.05);
-  max-width:1060px;margin:0 auto;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:1.75rem 2rem 5rem;font-size:.62rem;color:#1e293b;letter-spacing:.08em;
-}
-.sr-flinks{display:flex;gap:1.5rem}
-.sr-flinks a,.sr-flinks span{color:#1e293b;text-decoration:none;cursor:pointer;transition:color .2s}
-.sr-flinks a:hover,.sr-flinks span:hover{color:#00d4ff}
-
-/* ══ RESPONSIVE ══ */
-@media(max-width:800px){
-  .sr-navlinks{display:none}
-  .sr-aboutgrid{grid-template-columns:1fr;gap:2rem}
-  .sr-cgrid{grid-template-columns:1fr;gap:2rem}
-  .sr-heroname{font-size:clamp(2.5rem,13vw,5rem)}
-  .sr-stat:nth-child(n+4){display:none}
-  .sr-footer{flex-direction:column;gap:.75rem;text-align:center;padding-bottom:4rem}
-}
-@media(max-width:480px){
-  .sr-nav{padding:0 1rem}
-  #hero{padding-left:1rem;padding-right:1rem}
-  .sr-section{padding:4rem 1rem}
-}
-`;
 
 /* ═══════════════════════════════════════════════════════════
    RESUME DATA
@@ -422,20 +134,24 @@ export default function SmartResume() {
     const [coffeeAmt, setCoffeeAmt] = useState(99);     // ← add
     const [coffeeCustom, setCoffeeCustom] = useState(false);  // ← add
     const [coffeeNote, setCoffeeNote] = useState("");      // ← add
+    const [chatOpen, setChatOpen] = useState(false);
+    const [chatInput, setChatInput] = useState("");
+    const [chatMessages, setChatMessages] = useState([
+        { role: "assistant", text: "Hi! I'm Rooby's AI Assistant. Ask me anything about her experience, projects, skills, or how to get in touch." }
+    ]);
+    const [chatTyping, setChatTyping] = useState(false);
+    const chatRef = useRef(null);
     const toastId = useRef(0);
     const upiLink = (amt) => `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent(coffeeNote ? `${coffeeNote} | Support Rooby ☕` : "Support Rooby ☕")}`;
     const gpayLink = (amt) => `tez://upi/pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent(coffeeNote ? `${coffeeNote} | Support Rooby ☕` : "Support Rooby ☕")}`;
     const phonepeLink = (amt) => `phonepe://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${encodeURIComponent(coffeeNote ? `${coffeeNote} | Support Rooby ☕` : "Support Rooby ☕")}`;
-    /* ── Inject CSS + Fonts ── */
-    useEffect(() => {
+    /* ── Load fonts before paint ── */
+    useLayoutEffect(() => {
         const link = document.createElement("link");
         link.rel = "stylesheet";
         link.href = "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap";
         document.head.appendChild(link);
-        const style = document.createElement("style");
-        style.textContent = STYLES;
-        document.head.appendChild(style);
-        return () => { try { document.head.removeChild(link); document.head.removeChild(style); } catch { } };
+        return () => { try { document.head.removeChild(link); } catch { } };
     }, []);
 
 
@@ -546,6 +262,58 @@ export default function SmartResume() {
 
     const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
+    const getChatReply = (message) => {
+        const text = message.trim().toLowerCase();
+        const contactTriggers = ["contact", "hiring", "hire", "freelance", "consulting", "collaboration", "resume", "how can i", "how do i", "get in touch", "freelance work", "hiring inquiries"];
+        const aboutTriggers = ["tell me about rooby", "who is rooby", "about rooby", "about Her", "who are you", "what do you do"];
+        const techTriggers = ["technologies", "tech stack", "works with", "stack", "tools", "languages", "frameworks", "what technologies"];
+        const projectsTriggers = ["projects", "built", "what projects", "work on", "portfolio projects", "examples"];
+        const aiTriggers = ["ai agents", "agents", "ai agent", "llm", "rag", "chatbot", "artificial intelligence", "ai"];
+        const experienceTriggers = ["experience", "work experience", "career", "background", "show me his experience", "resume request"];
+
+        if (contactTriggers.some(trigger => text.includes(trigger))) {
+            return { type: "contact", text: "You can contact Rooby directly by" };
+        }
+        if (aboutTriggers.some(trigger => text.includes(trigger))) {
+            return "Rooby is an AI Analyst and Full Stack Engineer with experience building AI-powered web applications, blockchain solutions, and developer portfolios. She combines full-stack engineering with modern AI capabilities.";
+        }
+        if (techTriggers.some(trigger => text.includes(trigger))) {
+            return "Rooby works with React, Angular, TypeScript, GraphQL, Node.js, Express, PHP, REST APIs, MongoDB, MySQL, PostgreSQL, Redis, Solidity, Ethereum, Web3, Docker, LLMs, RAG, embeddings, prompt engineering, and vector search.";
+        }
+        if (projectsTriggers.some(trigger => text.includes(trigger))) {
+            return "She has built AI-powered web applications, blockchain applications, full-stack products, and modern developer portfolios. She also develops AI chatbots and RAG-based solutions.";
+        }
+        if (aiTriggers.some(trigger => text.includes(trigger))) {
+            return "Yes — Rooby works with AI agents and is building AI chatbots, using Gemini/OpenAI, RAG pipelines, vector search, and agent orchestration.";
+        }
+        if (experienceTriggers.some(trigger => text.includes(trigger))) {
+            return "Rooby has worked as a Freelance AI Analyst Consultant, a Software Engineer on the MEAN Stack at Orion Innovation, and a Full Stack Developer at Osiz Technologies.";
+        }
+        return "I don't see that information on Rooby's portfolio yet. You can contact her directly for more details.";
+    };
+
+    const addChatMessage = (message) => {
+        setChatMessages((current) => [...current, message]);
+    };
+
+    const handleSendChat = () => {
+        if (!chatInput.trim()) return;
+        const userText = chatInput.trim();
+        addChatMessage({ role: "user", text: userText });
+        setChatInput("");
+        setChatTyping(true);
+        setTimeout(() => {
+            addChatMessage({ role: "assistant", text: getChatReply(userText) });
+            setChatTyping(false);
+        }, 900);
+    };
+
+    useEffect(() => {
+        if (chatOpen || chatMessages.length) {
+            chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" });
+        }
+    }, [chatMessages, chatOpen]);
+
     /* ── Download + notify ── */
     const handleDownload = async () => {
         try {
@@ -612,11 +380,34 @@ export default function SmartResume() {
     /* ══════════════════════════════════════════════════════ */
     return (
         <>
-            {/* ── Backgrounds ── */}
-            <div className="sr-gridbg" />
-            <div className="sr-orb sr-orb1" />
-            <div className="sr-orb sr-orb2" />
-            <div className="sr-orb sr-orb3" />
+            {/* ── Floating Code Background ── */}
+            <div className="sr-codebg">
+                {[
+                    { t: `const model = new LLM("gpt-4");`, l: "0%", d: "0s", dur: "28s", c: "rgba(0,212,255,.18)" },
+                    { t: `await rag.query(vectorStore, prompt);`, l: "18%", d: "3s", dur: "22s", c: "rgba(0,212,255,.12)" },
+                    { t: `SELECT * FROM analytics WHERE views > 0;`, l: "28%", d: "6s", dur: "20s", c: "rgba(245,158,11,.15)" },
+                    { t: `git commit -m "shipped to prod 🚀"`, l: "38%", d: "1.5s", dur: "25s", c: "rgba(0,212,255,.1)" },
+                    { t: `const chain = new RAGChain(embeddings);`, l: "50%", d: "9s", dur: "19s", c: "rgba(245,158,11,.12)" },
+                    { t: `npm run build && vercel --prod`, l: "0%", d: "4s", dur: "23s", c: "rgba(0,212,255,.14)" },
+                    { t: `web3.eth.sendTransaction({ to, value });`, l: "72%", d: "7s", dur: "21s", c: "rgba(139,92,246,.18)" },
+                    { t: `if (score > 0.85) return embedding.match;`, l: "82%", d: "2s", dur: "24s", c: "rgba(0,212,255,.1)" },
+                    { t: `const prompt = \`Chain-of-Thought: \${q}\``, l: "0%", d: "12s", dur: "20s", c: "rgba(245,158,11,.1)" },
+                    { t: `docker build -t portfolio . && deploy`, l: "44%", d: "15s", dur: "22s", c: "rgba(0,212,255,.08)" },
+                    { t: `import { RAG, LLM } from "@ai/core";`, l: "56%", d: "5s", dur: "26s", c: "rgba(139,92,246,.14)" },
+                    { t: `supabase.from("counted").update(views)`, l: "90%", d: "10s", dur: "18s", c: "rgba(0,212,255,.12)" },
+                    { t: `const nft = await contract.mint(address);`, l: "33%", d: "8s", dur: "24s", c: "rgba(245,158,11,.14)" },
+                    { t: `embeddings.similarity(v1, v2) > threshold`, l: "76%", d: "13s", dur: "21s", c: "rgba(0,212,255,.1)" },
+                ].map((line, i) => (
+                    <div key={i} className="sr-codeline" style={{
+                        left: line.l,
+                        animationDelay: line.d,
+                        animationDuration: line.dur,
+                        color: line.c,
+                    }}>
+                        {line.t}
+                    </div>
+                ))}
+            </div>
 
             {/* ── Toast Stack ── */}
             <div className="sr-toaststack">
@@ -830,12 +621,12 @@ export default function SmartResume() {
                         </div>
                         <div className="sr-rright">
                             <div className="sr-detailcard">
-                                {[     
-                                        ["Focus", "AI & Full Stack Engineering"],
-                                        ["Experience", "3 Years"],
-                                        ["Stack", "LLMs • SAP/ABAP • Python • SQL • MEAN/MERN"],
-                                        ["Additional", "Blockchain"],
-                                        ["Location", "Remote • Worldwide"],
+                                {[
+                                    ["Focus", "AI & Full Stack Engineering"],
+                                    ["Experience", "3 Years"],
+                                    ["Stack", "LLMs • SAP/ABAP • Python • SQL • MEAN/MERN"],
+                                    ["Additional", "Blockchain"],
+                                    ["Location", "Remote • Worldwide"],
                                     ["Status", <span key="s" className="sr-openbadge"><span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />Available for Freelance & Consulting Projects</span>],
                                 ].map(([k, v]) => (
                                     <div key={k} className="sr-drow">
@@ -990,10 +781,7 @@ export default function SmartResume() {
                                 <div className="sr-cicon" style={{ fontSize: ".7rem", fontWeight: 700 }}>in</div>
                                 linkedin.com/in/roobyregupathy
                             </a>
-                            <div className="sr-clink">
-                                <div className="sr-cicon">📞</div>
-                                +91 8610669798
-                            </div>
+                            
                             <div
                                 style={{
                                     marginTop: "1.5rem",
@@ -1074,6 +862,71 @@ export default function SmartResume() {
                 </footer>
 
             </div>{/* end sr-page */}
+
+            <div className="chat-widget">
+                <button className="chat-float-btn" onClick={() => setChatOpen(open => !open)} aria-label="Open chat with Rooby's assistant">
+                    <img src="/rooby_dp.jpg" alt="Rooby avatar" className="chat-float-avatar" />
+                </button>
+                <div className={`chat-panel${chatOpen ? " open" : ""}`}>
+                    <div className="chat-header">
+                        <img src="/rooby_dp.jpg" alt="Rooby avatar" className="chat-avatar" />
+                        <div className="chat-title">
+                            <strong>Rooby's AI Assistant</strong>
+                            <span>Ask about experience, skills, or contact info.</span>
+                        </div>
+                        <button className="chat-close" onClick={() => setChatOpen(false)}>✕</button>
+                    </div>
+                    <div className="chat-body" ref={chatRef}>
+                        {chatMessages.map((msg, idx) => (
+                            <div key={`${msg.role}-${idx}`} className={`chat-message ${msg.role}`}>
+                                {typeof msg.text === "string" ? (
+                                    msg.text.split("\n").map((line, i) => <div key={i}>{line}</div>)
+                                ) : msg.text.type === "contact" ? (
+                                    <div>
+                                        <div style={{ marginBottom: ".5rem" }}>{msg.text.text}</div>
+                                        <div style={{ display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
+                                            <a href="mailto:rooby.dev22@gmail.com" style={{
+                                                display: "inline-flex", alignItems: "center", gap: ".4rem",
+                                                background: "rgba(0,212,255,.15)", border: "1px solid rgba(0,212,255,.3)",
+                                                color: "#00d4ff", padding: ".55rem 1rem", borderRadius: "999px",
+                                                textDecoration: "none", fontSize: ".82rem", fontWeight: 500
+                                            }}>
+                                                <span>✉</span> Email
+                                            </a>
+                                            <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer" style={{
+                                                display: "inline-flex", alignItems: "center", gap: ".4rem",
+                                                background: "rgba(245,158,11,.15)", border: "1px solid rgba(245,158,11,.3)",
+                                                color: "#f59e0b", padding: ".55rem 1rem", borderRadius: "999px",
+                                                textDecoration: "none", fontSize: ".82rem", fontWeight: 500
+                                            }}>
+                                                <span>in</span> LinkedIn
+                                            </a>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    msg.text
+                                )}
+                            </div>
+                        ))}
+                        {chatTyping && (
+                            <div className="chat-typing">
+                                <div className="chat-dots"><span /><span /><span /></div>
+                                Typing...
+                            </div>
+                        )}
+                    </div>
+                    <div className="chat-input-row">
+                        <input
+                            className="chat-input"
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendChat(); } }}
+                            placeholder="Ask about Rooby's work, skills, or contact options..."
+                        />
+                        <button className="chat-send" onClick={handleSendChat}>Send</button>
+                    </div>
+                </div>
+            </div>
 
             {/* ╔══ STATS BAR (fixed bottom) ══════════════════════╗ */}
             <div className="sr-statsbar">
