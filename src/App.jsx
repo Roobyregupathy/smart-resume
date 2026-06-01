@@ -270,9 +270,13 @@ export default function SmartResume() {
         const projectsTriggers = ["projects", "built", "what projects", "work on", "portfolio projects", "examples"];
         const aiTriggers = ["ai agents", "agents", "ai agent", "llm", "rag", "chatbot", "artificial intelligence", "ai"];
         const experienceTriggers = ["experience", "work experience", "career", "background", "show me his experience", "resume request"];
+        const chatTriggers = ["hi", "hello", "helo", "hey"];
 
         if (contactTriggers.some(trigger => text.includes(trigger))) {
             return { type: "contact", text: "You can contact Rooby directly by" };
+        }
+        if (chatTriggers.some(trigger => text.includes(trigger))) {
+            return "Hi! 👋. How can I help you today?" ;
         }
         if (aboutTriggers.some(trigger => text.includes(trigger))) {
             return "Rooby is an AI Analyst and Full Stack Engineer with experience building AI-powered web applications, blockchain solutions, and developer portfolios. She combines full-stack engineering with modern AI capabilities.";
