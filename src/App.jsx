@@ -154,6 +154,46 @@ export default function SmartResume() {
         return () => { try { document.head.removeChild(link); } catch { } };
     }, []);
 
+    /* ── Disable Inspect Element & Image Open in New Tab ── */
+    useEffect(() => {
+        // Disable right-click context menu
+        const handleContextMenu = (e) => {
+            e.preventDefault();
+            return false;
+        };
+
+        // Disable F12, Ctrl+Shift+I, Ctrl+Shift+C
+        const handleKeyDown = (e) => {
+            if (
+                e.key === "F12" ||
+                (e.ctrlKey && e.shiftKey && e.key === "I") ||
+                (e.ctrlKey && e.shiftKey && e.key === "C") ||
+                (e.ctrlKey && e.shiftKey && e.key === "K")
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        };
+
+        // Prevent image dragging and context menu on images
+        const handleImageEvents = (e) => {
+            if (e.target.tagName === "IMG") {
+                e.preventDefault();
+                return false;
+            }
+        };
+
+        document.addEventListener("contextmenu", handleContextMenu);
+        document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("dragstart", handleImageEvents);
+
+        return () => {
+            document.removeEventListener("contextmenu", handleContextMenu);
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("dragstart", handleImageEvents);
+        };
+    }, []);
+
 
 
     /* ── Welcome toast ── */

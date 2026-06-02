@@ -7,6 +7,11 @@ body{font-family:'JetBrains Mono',monospace;background:#050810;color:#cdd6f4;ove
 ::-webkit-scrollbar-track{background:#050810}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#00d4ff,#f59e0b)}
 
+/* ── Image & Content Protection ── */
+img{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-user-drag:none;pointer-events:auto}
+body{-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text}
+
 /* ── Floating Code Background ── */
 .sr-codebg{
   position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
