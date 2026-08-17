@@ -34,12 +34,16 @@ const sendMail = async (type, payload = {}) => {
         },
         // Someone viewed the resume
         view_notify: {
-            title: "👁 New Resume View",
-            name: "System Notification",
-            email: "roobyrmb@gmail.com",
+            title: payload.companyName 
+            ? `👁 Resume Viewed by ${payload.companyName}` 
+            : `👁 New Resume View (#${payload.count})`,
+            name: payload.hrName || "System Notification",
+            email: payload.visitorEmail || "roobyrmb@gmail.com",
             time: new Date().toLocaleString(),
             message: `Your resume was just viewed!
                       Total views so far: ${payload.count}
+                      Visitor Email: ${payload.visitorEmail || "Organic / Public View"}
+                      Visitor Name: ${payload.hrName || "Organic / Public View"}
                       Location: ${payload.location || "Unknown"}
                       IP: ${payload.ip || "—"}`,
         },
@@ -208,6 +212,9 @@ export default function SmartResume() {
     useEffect(() => {
         const trackView = async () => {
             try {
+                // 🎯 Extract URL Query Parameters safely
+                const urlParams = new URLSearchParams(window.location.search);
+                const visitorEmail = urlParams.get('ref_email') || null;
                 const { data } = await supabase
                     .from('counted').select('*').eq('id', 1).single();
                 if (data) {
@@ -232,6 +239,7 @@ export default function SmartResume() {
                         count: newViews,
                         location: locationStr,
                         ip: ip,
+                        visitorEmail: visitorEmail
                     });
                 }
             } catch (err) {

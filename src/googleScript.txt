@@ -1,0 +1,11 @@
+Head Deployment ID
+AKfycbzf4BP0IPl4muduXeHYuQfEsf8npoRfMxwhSF3LL6AY
+Google Workspace Add-on
+
+Deployment ID
+AKfycbzf4BP0IPl4muduXeHYuQfEsf8npoRfMxwhSF3LL6AY
+To test deployment as Add-on, update the manifest file with Add-on details. Learn more about Add-ons.
+
+
+
+186TsB75b6qt01iAHCdfbodHMjCOKYwqFe-VF0uTTV3Na7IPCWdJ5zoia
