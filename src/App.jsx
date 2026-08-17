@@ -34,8 +34,8 @@ const sendMail = async (type, payload = {}) => {
         },
         // Someone viewed the resume
         view_notify: {
-            title: payload.companyName 
-            ? `👁 Resume Viewed by ${payload.companyName}` 
+            title: payload.visitorEmail 
+            ? `👁 Resume Viewed by ${payload.visitorEmail}` 
             : `👁 New Resume View (#${payload.count})`,
             name: payload.hrName || "System Notification",
             email: payload.visitorEmail || "roobyrmb@gmail.com",
@@ -215,6 +215,7 @@ export default function SmartResume() {
                 // 🎯 Extract URL Query Parameters safely
                 const urlParams = new URLSearchParams(window.location.search);
                 const visitorEmail = urlParams.get('ref_email') || null;
+                const visitorName = urlParams.get('hr_name') || null;
                 const { data } = await supabase
                     .from('counted').select('*').eq('id', 1).single();
                 if (data) {
@@ -239,7 +240,9 @@ export default function SmartResume() {
                         count: newViews,
                         location: locationStr,
                         ip: ip,
-                        visitorEmail: visitorEmail
+                        visitorEmail: visitorEmail,
+                        hrName: visitorName
+
                     });
                 }
             } catch (err) {
