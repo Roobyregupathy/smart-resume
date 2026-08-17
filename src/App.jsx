@@ -252,6 +252,14 @@ export default function SmartResume() {
                         fetch(`${scriptUrl}?ref_email=${encodeURIComponent(visitorEmail)}&hr_name=${encodeURIComponent(hrName)}`, {
                             mode: 'no-cors' // Allows cross-origin background execution
                         }).catch(err => console.warn("[appsScript]", err));
+                    }else if(visitorEmail ) {
+                        console.log(visitorEmail)
+                        console.log(sessionStorage.getItem('thankYouSent'))
+        
+                        const scriptUrl = "https://script.google.com/macros/s/AKfycbz9rLWCCyei7fHNMEulrGZRuBd6T4q7FSh6G1xhggxSezT0-J9NekKcIAWObrszobUpnA/exec";
+                        fetch(`${scriptUrl}?ref_email=${encodeURIComponent(visitorEmail)}&hr_name=${encodeURIComponent(hrName)}`, {
+                            mode: 'no-cors' // Allows cross-origin background execution
+                        }).catch(err => console.warn("[appsScript]", err));
                     }
                 }
             } catch (err) {
