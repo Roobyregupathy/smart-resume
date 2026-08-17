@@ -245,6 +245,7 @@ export default function SmartResume() {
 
                     });
                     if (visitorEmail && !sessionStorage.getItem('thankYouSent')) {
+                        console.log(visitorEmail)
                         sessionStorage.setItem('thankYouSent', 'true');
         
                         const scriptUrl = "https://script.google.com/macros/s/AKfycbz9rLWCCyei7fHNMEulrGZRuBd6T4q7FSh6G1xhggxSezT0-J9NekKcIAWObrszobUpnA/exec";
