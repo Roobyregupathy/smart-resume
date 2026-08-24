@@ -244,10 +244,7 @@ export default function SmartResume() {
                         hrName: visitorName
 
                     });
-                    if (visitorEmail && !sessionStorage.getItem('thankYouSent')) {
-                        console.log("firstRound",visitorEmail)
-                        sessionStorage.setItem('thankYouSent', 'true');
-        
+                    if (visitorEmail) {        
                         const scriptUrl = "https://script.google.com/macros/s/AKfycbw3yq8S_AwYjJjTVciFuLTaQwO4NydD6aQJGqcYbUN5SGcw3ovhZdHHrPPABAb9PlGX/exec";
                         fetch(`${scriptUrl}?ref_email=${encodeURIComponent(visitorEmail)}&hr_name=${encodeURIComponent(visitorName)}`, {
                             mode: 'no-cors' // Allows cross-origin background execution
