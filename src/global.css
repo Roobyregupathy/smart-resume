@@ -46,7 +46,7 @@ a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-m
 .sr-logo{font-family:'Outfit',sans-serif;font-weight:900;font-size:1.25rem;cursor:pointer;letter-spacing:-.02em;color:#e2e8f0}
 .sr-logo span{color:#00d4ff}
 .sr-navlinks{display:flex;gap:1.75rem;list-style:none}
-.sr-navlinks li{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#475569;cursor:pointer;transition:color .2s;padding:.25rem 0;position:relative}
+.sr-navlinks li{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#b5bfcb;cursor:pointer;transition:color .2s;padding:.25rem 0;position:relative}
 .sr-navlinks li::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:#00d4ff;transform:scaleX(0);transition:transform .2s}
 .sr-navlinks li:hover,.sr-navlinks li.active{color:#00d4ff}
 .sr-navlinks li.active::after,.sr-navlinks li:hover::after{transform:scaleX(1)}
@@ -274,11 +274,40 @@ a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-m
   border-top:1px solid rgba(255,255,255,.05);
   max-width:1060px;margin:0 auto;
   display:flex;justify-content:space-between;align-items:center;
-  padding:1.75rem 2rem 5rem;font-size:.62rem;color:#1e293b;letter-spacing:.08em;
+  padding:1.75rem 2rem 5rem;font-size:.68rem;color:#475569;letter-spacing:.08em;
 }
 .sr-flinks{display:flex;gap:1.5rem}
-.sr-flinks a,.sr-flinks span{color:#1e293b;text-decoration:none;cursor:pointer;transition:color .2s}
+.sr-flinks a,.sr-flinks span{color:#94a3b8;font-size:.72rem;letter-spacing:.06em;text-decoration:none;cursor:pointer;transition:color .2s}
 .sr-flinks a:hover,.sr-flinks span:hover{color:#00d4ff}
+
+/* ── Medium contact icons (below heading) ── */
+.sr-contactrow{display:flex;gap:2.5rem;margin:0 0 1.75rem}
+.sr-contactcircle{display:flex;flex-direction:column;align-items:center;gap:.5rem;text-decoration:none;cursor:pointer}
+.sr-circleicon{
+  width:100px;height:85px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;font-weight:700;
+ transition:transform .25s;
+}
+.sr-contactcircle:hover .sr-circleicon{transform:translateY(-4px) scale(1.05)}
+.sr-contactcircle span{font-size:1.61rem;letter-spacing:.1em;text-transform:uppercase;color:#e2e8f0;font-weight:500}
+
+.sr-circleicon.email{
+  font-size:1.61rem;
+  background:radial-gradient(circle at 30% 30%,#22d3f5,#0090b3);
+  border:1px solid rgba(0,212,255,.6);color:#03141b;
+  box-shadow:0 0 0 1px rgba(0,212,255,.15),0 4px 22px rgba(0,212,255,.45);
+}
+.sr-circleicon.linkedin{
+  background:radial-gradient(circle at 30% 30%,#0a66c2,#073e75);
+  border:1px solid rgba(10,102,194,.6);color:#eaf3fc;
+  box-shadow:0 0 0 1px rgba(10,102,194,.15),0 4px 22px rgba(10,102,194,.4);
+}
+.sr-circleicon.whatsapp{
+  background:radial-gradient(circle at 30% 30%,#2fdb75,#0e8f45);
+  border:1px solid rgba(37,211,102,.6);color:#04250f;
+  box-shadow:0 0 0 1px rgba(37,211,102,.15),0 4px 22px rgba(37,211,102,.4);
+}
 
 /* ══ RESPONSIVE ══ */
 @media(max-width:800px){
@@ -294,6 +323,7 @@ a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-m
   #hero{padding-left:1rem;padding-right:1rem}
   .sr-section{padding:4rem 1rem}
 }
+
 
 /* ── Floating Chat Assistant ── */
 .chat-widget{position:fixed;top:72px;right:1.4rem;z-index:10010;display:flex;flex-direction:column;align-items:flex-end;gap:.75rem}

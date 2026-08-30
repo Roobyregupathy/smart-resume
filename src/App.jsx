@@ -822,17 +822,37 @@ export default function SmartResume() {
                     <div className="sr-cgrid">
                         {/* Left: info */}
                         <div className="sr-rleft">
-                            <div className="sr-cinfo">
-                                <p>Open to full-time roles, freelance projects, and AI collaborations. I typically respond within 24 hours. Looking forward to hearing from you.</p>
+                            <div className="sr-contactrow">
+                                <a href="mailto:rooby.dev22@gmail.com" className="sr-contactcircle" aria-label="Email">
+                                    <div className="sr-circleicon email">✉</div>
+                                    
+                                </a>
+                                <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer" className="sr-contactcircle" aria-label="LinkedIn">
+                                    <div className="sr-circleicon linkedin">in</div>
+                                    
+                                </a>
+                                <a href="https://wa.me/918610669798" target="_blank" rel="noreferrer" className="sr-contactcircle" aria-label="WhatsApp">
+                                    <div className="sr-circleicon whatsapp">
+                                        
+                                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="35" height="35" viewBox="0 0 30 30">
+                                            <path d="M 15 3 C 8.373 3 3 8.373 3 15 C 3 17.251208 3.6323415 19.350068 4.7109375 21.150391 L 3.1074219 27 L 9.0820312 25.431641 C 10.829354 26.425062 12.84649 27 15 27 C 21.627 27 27 21.627 27 15 C 27 8.373 21.627 3 15 3 z M 10.892578 9.4023438 C 11.087578 9.4023438 11.287937 9.4011562 11.460938 9.4101562 C 11.674938 9.4151563 11.907859 9.4308281 12.130859 9.9238281 C 12.395859 10.509828 12.972875 11.979906 13.046875 12.128906 C 13.120875 12.277906 13.173313 12.453437 13.070312 12.648438 C 12.972312 12.848437 12.921344 12.969484 12.777344 13.146484 C 12.628344 13.318484 12.465078 13.532109 12.330078 13.662109 C 12.181078 13.811109 12.027219 13.974484 12.199219 14.271484 C 12.371219 14.568484 12.968563 15.542125 13.851562 16.328125 C 14.986562 17.342125 15.944188 17.653734 16.242188 17.802734 C 16.540187 17.951734 16.712766 17.928516 16.884766 17.728516 C 17.061766 17.533516 17.628125 16.864406 17.828125 16.566406 C 18.023125 16.268406 18.222188 16.319969 18.492188 16.417969 C 18.766188 16.515969 20.227391 17.235766 20.525391 17.384766 C 20.823391 17.533766 21.01875 17.607516 21.09375 17.728516 C 21.17075 17.853516 21.170828 18.448578 20.923828 19.142578 C 20.676828 19.835578 19.463922 20.505734 18.919922 20.552734 C 18.370922 20.603734 17.858562 20.7995 15.351562 19.8125 C 12.327563 18.6215 10.420484 15.524219 10.271484 15.324219 C 10.122484 15.129219 9.0605469 13.713906 9.0605469 12.253906 C 9.0605469 10.788906 9.8286563 10.071437 10.097656 9.7734375 C 10.371656 9.4754375 10.692578 9.4023438 10.892578 9.4023438 z"></path>
+                                        </svg>
+                                    </div>
+                                    
+                                </a>
                             </div>
-                            <a href="mailto:rooby.dev22@gmail.com" className="sr-clink" target="_blank" rel="noreferrer">
+
+                            <div className="sr-cinfo">
+                                <p>Open to full-time roles, freelance and AI. I typically respond within 24 hours. Looking forward to Collab.</p>
+                            </div>
+                            {/* <a href="mailto:rooby.dev22@gmail.com" className="sr-clink" target="_blank" rel="noreferrer">
                                 <div className="sr-cicon">✉</div>
                                 rooby.dev22@gmail.com
                             </a>
                             <a href="https://www.linkedin.com/in/roobyregupathy" className="sr-clink" target="_blank" rel="noreferrer">
                                 <div className="sr-cicon" style={{ fontSize: ".7rem", fontWeight: 700 }}>in</div>
                                 linkedin.com/in/roobyregupathy
-                            </a>
+                            </a> */}
                             
                             <div
                                 style={{
@@ -857,12 +877,12 @@ export default function SmartResume() {
                                 </span>
                                 <br />
                                 Enjoyed this portfolio ? <br />
-                                You can support my journey with a coffee ☕
-                                Every contribution helps me build more AI tools, web experiences, and creative projects.
+                                You can support my journey with a coffee,
+                                Every contribution helps me build more creative projects.
                                 <br />
                                 <a href="#" onClick={e => { e.preventDefault(); setShowCoffee(true); }}
                                     style={{ color: "#f59e0b", textDecoration: "none", fontWeight: 600 }}>
-                                    → Buy Me a Coffee ☕
+                                    → ☕ Buy Me a Coffee 
                                 </a>
                             </div>
                             {/* <div style={{marginTop:"1.5rem",padding:"1rem 1.1rem",background:"rgba(0,212,255,.03)",border:"1px solid rgba(0,212,255,.1)",fontSize:".68rem",color:"#334155",lineHeight:1.7}}>
@@ -909,6 +929,7 @@ export default function SmartResume() {
                     <div className="sr-flinks">
                         <a href="mailto:rooby.dev22@gmail.com">Email</a>
                         <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer">LinkedIn</a>
+                        <a href="https://wa.me/918610669798" target="_blank" rel="noreferrer">WhatsApp</a>
                         <span onClick={handleDownload}>Resume PDF</span>
                     </div>
                 </footer>
