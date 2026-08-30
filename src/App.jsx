@@ -459,12 +459,16 @@ export default function SmartResume() {
                     { t: `const nft = await contract.mint(address);`, l: "33%", d: "8s", dur: "24s", c: "rgba(245,158,11,.14)" },
                     { t: `embeddings.similarity(v1, v2) > threshold`, l: "76%", d: "13s", dur: "21s", c: "rgba(0,212,255,.1)" },
                 ].map((line, i) => (
-                    <div key={i} className="sr-codeline" style={{
-                        left: line.l,
-                        animationDelay: line.d,
-                        animationDuration: line.dur,
-                        color: line.c,
-                    }}>
+                    <div
+                      key={i}
+                      className="sr-codeline"
+                      style={{
+                        "--line-left": line.l,
+                        "--line-delay": line.d,
+                        "--line-duration": line.dur,
+                        "--line-color": line.c,
+                      }}
+                    >
                         {line.t}
                     </div>
                 ))}
@@ -474,75 +478,47 @@ export default function SmartResume() {
             <div className="sr-toaststack">
                 {toasts.map(t => (
                     <div key={t.id} className={`sr-toast ${t.type}`}>
-                        <span style={{ fontSize: "1rem", flexShrink: 0 }}>{t.icon}</span>
+                        <span className="sr-toast-icon">{t.icon}</span>
                         <span>{t.msg}</span>
                     </div>
                 ))}
             </div>
             {/* ☕ UPI PAYMENT POPUP */}
             {showCoffee && (
-                <div onClick={() => setShowCoffee(false)} style={{
-                    position: "fixed", inset: 0, zIndex: 9998,
-                    background: "rgba(5,8,16,.88)", backdropFilter: "blur(16px)",
-                    display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem",
-                }}>
-                    <div onClick={e => e.stopPropagation()} style={{
-                        background: "#0c1220", border: "1px solid rgba(245,158,11,.2)",
-                        maxWidth: "380px", width: "100%", padding: "2rem", position: "relative",
-                        boxShadow: "0 0 80px rgba(245,158,11,.06)", maxHeight: "90vh", overflowY: "auto",
-                    }}>
+                <div className="sr-coffee-backdrop" onClick={() => setShowCoffee(false)}>
+                    <div className="sr-coffee-modal" onClick={e => e.stopPropagation()}>
 
                         {/* ── Close ── */}
-                        <button onClick={() => setShowCoffee(false)} style={{
-                            position: "absolute", top: "1rem", right: "1rem",
-                            background: "none", border: "none", color: "#334155", fontSize: "1.1rem", cursor: "pointer",
-                        }}>✕</button>
+                        <button className="sr-coffee-close" onClick={() => setShowCoffee(false)}>✕</button>
 
                         {/* ── Title ── */}
-                        <div style={{ fontSize: "1.5rem", marginBottom: ".25rem" }}>☕</div>
-                        <div style={{ fontFamily: "'Outfit',sans-serif", fontWeight: 800, fontSize: "1.1rem", color: "#e2e8f0", marginBottom: ".2rem" }}>
+                        <div className="sr-coffee-emoji">☕</div>
+                        <div className="sr-coffee-title">
                             Pay Rooby Regupathy
                         </div>
 
                         {/* ── UPI ID row ── */}
-                        <div style={{
-                            display: "flex", alignItems: "center", justifyContent: "space-between",
-                            padding: ".5rem .75rem", marginBottom: "1.25rem",
-                            background: "rgba(0,212,255,.03)", border: "1px solid rgba(0,212,255,.1)",
-                        }}>
-                            <span style={{ fontSize: ".72rem", color: "#00d4ff", letterSpacing: ".03em" }}>{UPI_ID}</span>
-                            <button onClick={() => { navigator.clipboard.writeText(UPI_ID); pushToast("UPI ID copied!", "📋", "default"); }} style={{
-                                background: "rgba(0,212,255,.12)", border: "1px solid rgba(0,212,255,.3)",
-                                color: "#00d4ff", fontSize: ".6rem", padding: ".25rem .65rem", cursor: "pointer",
-                                letterSpacing: ".08em",
-                            }}>Copy ID</button>
+                        <div className="sr-coffee-upirow">
+                            <span className="sr-coffee-upi">{UPI_ID}</span>
+                            <button className="sr-coffee-copybtn" onClick={() => { navigator.clipboard.writeText(UPI_ID); pushToast("UPI ID copied!", "📋", "default"); }}>Copy ID</button>
                         </div>
 
                         {/* ── QR Code (live from UPI amount) ── */}
-                        <div style={{
-                            display: "flex", justifyContent: "center", marginBottom: "1.25rem",
-                            padding: "1rem", background: "#fff", border: "2px solid rgba(245,158,11,.3)",
-                        }}>
+                        <div className="sr-coffee-qrwrap">
                             <img
+                                className="sr-coffee-qr"
                                 src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiLink(coffeeAmt || 99))}`}
                                 alt="UPI QR"
                                 width={180} height={180}
-                                style={{ display: "block" }}
                             />
                         </div>
 
                         {/* ── Quick amount buttons ── */}
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".5rem", marginBottom: "1rem" }}>
+                        <div className="sr-coffee-amounts">
                             {[99, 299, 499, "Custom"].map((a) => (
-                                <button key={a} onClick={() => {
+                                <button key={a} className={`sr-coffee-amount-btn${coffeeAmt === a ? " active" : ""}`} onClick={() => {
                                     if (a === "Custom") { setCoffeeAmt(""); setCoffeeCustom(true); }
                                     else { setCoffeeAmt(a); setCoffeeCustom(false); }
-                                }} style={{
-                                    padding: ".5rem .25rem",
-                                    background: coffeeAmt === a ? "rgba(245,158,11,.2)" : "rgba(255,255,255,.03)",
-                                    border: coffeeAmt === a ? "1px solid rgba(245,158,11,.6)" : "1px solid rgba(255,255,255,.07)",
-                                    color: coffeeAmt === a ? "#f59e0b" : "#475569",
-                                    fontSize: ".65rem", cursor: "pointer", letterSpacing: ".04em",
                                 }}>
                                     {a === "Custom" ? "Custom\nAmount" : `₹${a}`}
                                 </button>
@@ -552,6 +528,7 @@ export default function SmartResume() {
                         {/* ── Custom amount input ── */}
                         {coffeeCustom && (
                             <input
+                                className="sr-coffee-custom-input"
                                 type="number"
                                 placeholder="Enter amount in ₹ (min ₹50)"
                                 value={coffeeAmt}
@@ -569,44 +546,30 @@ export default function SmartResume() {
                                         setCoffeeAmt(50);
                                     }
                                 }}
-                                style={{
-                                    width: "100%", background: "#0c1220", border: "1px solid rgba(245,158,11,.3)",
-                                    color: "#e2e8f0", fontFamily: "'JetBrains Mono',monospace", fontSize: ".76rem",
-                                    padding: ".65rem .9rem", outline: "none", marginBottom: "1rem",
-                                }}
                             />
                         )}
 
                         {/* ── Leave a note ── */}
                         <input
+                            className="sr-coffee-note"
                             type="text"
                             placeholder="Leave a note (optional)"
                             value={coffeeNote}
                             onChange={e => setCoffeeNote(e.target.value)}
-                            style={{
-                                width: "100%", background: "#0c1220", border: "1px solid rgba(255,255,255,.07)",
-                                color: "#e2e8f0", fontFamily: "'JetBrains Mono',monospace", fontSize: ".72rem",
-                                padding: ".6rem .9rem", outline: "none", marginBottom: "1rem",
-                            }}
                         />
 
                         {/* ── Pay button / app links ── */}
-                        <div style={{ display: "flex", gap: ".5rem", marginBottom: ".75rem" }}>
+                        <div className="sr-coffee-links">
                             {[
                                 { name: "GPay", href: gpayLink(coffeeAmt || 99), color: "#4285F4" },
                                 { name: "PhonePe", href: phonepeLink(coffeeAmt || 99), color: "#5f259f" },
                                 { name: "Any UPI", href: upiLink(coffeeAmt || 99), color: "#f59e0b" },
                             ].map(btn => (
-                                <a key={btn.name} href={btn.href} style={{
-                                    flex: 1, textAlign: "center", padding: ".6rem .25rem",
-                                    background: "transparent", border: `1px solid ${btn.color}40`,
-                                    color: btn.color, textDecoration: "none", fontSize: ".62rem",
-                                    letterSpacing: ".05em",
-                                }}>{btn.name}</a>
+                                <a key={btn.name} href={btn.href} className="sr-coffee-link" style={{ "--sr-link-color": btn.color, "--sr-link-border": `${btn.color}40` }}>{btn.name}</a>
                             ))}
                         </div>
 
-                        <div style={{ fontSize: ".58rem", color: "#1e293b", textAlign: "center", letterSpacing: ".06em" }}>
+                        <div className="sr-coffee-secure">
                             Secure UPI · No fees · Instant transfer
                         </div>
                     </div>
@@ -709,7 +672,7 @@ export default function SmartResume() {
                                     ["Stack", "LLMs • SAP/ABAP • Python • SQL • MEAN/MERN"],
                                     ["Additional", "Blockchain"],
                                     ["Location", "Remote • Worldwide"],
-                                    ["Status", <span key="s" className="sr-openbadge"><span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />Available for Freelance & Consulting Projects</span>],
+                                    ["Status", <span key="s" className="sr-openbadge"><span className="sr-status-dot" />Available for Freelance & Consulting Projects</span>],
                                 ].map(([k, v]) => (
                                     <div key={k} className="sr-drow">
                                         <span className="sr-dk">{k}</span>
@@ -739,7 +702,7 @@ export default function SmartResume() {
                     </div>
                     <div className="sr-skillsgrid">
                         {SKILLS.map((s, i) => (
-                            <div key={s.cat} className="sr-skillcard sr-reveal" style={{ transitionDelay: `${i * 0.07}s` }}>
+                            <div key={s.cat} className="sr-skillcard sr-reveal" style={{ "--delay": `${i * 0.07}s` }}>
                                 <div className="sr-skillcat">{s.cat}</div>
                                 <div className="sr-skillchips">
                                     {s.items.map(item => <span key={item} className="sr-chip">{item}</span>)}
@@ -758,7 +721,7 @@ export default function SmartResume() {
                     </div>
                     <div className="sr-timeline">
                         {EXPERIENCE.map((e, i) => (
-                            <div key={e.role} className="sr-expitem sr-reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
+                            <div key={e.role} className="sr-expitem sr-reveal" style={{ "--delay": `${i * 0.1}s` }}>
                                 <div className="sr-expperiod">{e.period}</div>
                                 <div className="sr-exprole">{e.role}</div>
                                 <div className="sr-expco">{e.company}</div>
@@ -780,7 +743,7 @@ export default function SmartResume() {
                     </div>
                     <div className="sr-whygrid">
                         {WHY_ME.map((w, i) => (
-                            <div key={w.n} className="sr-whycard sr-reveal" style={{ transitionDelay: `${i * 0.08}s` }}>
+                            <div key={w.n} className="sr-whycard sr-reveal" style={{ "--delay": `${i * 0.08}s` }}>
                                 <div className="sr-whynum">{w.n}</div>
                                 <div className="sr-whytitle">{w.t}</div>
                                 <div className="sr-whydesc">{w.d}</div>
@@ -849,7 +812,7 @@ export default function SmartResume() {
                                     
                                 </a>
                                 <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer" className="sr-contactcircle" aria-label="LinkedIn">
-                                    <div className="sr-circleicon linkedin">in</div>
+                                    <div className="sr-circleicon linkedin sr-contact-linkedin">in</div>
                                     
                                 </a>
                                 <a href="https://wa.me/918610669798" target="_blank" rel="noreferrer" className="sr-contactcircle" aria-label="WhatsApp">
@@ -875,25 +838,8 @@ export default function SmartResume() {
                                 linkedin.com/in/roobyregupathy
                             </a> */}
                             
-                            <div
-                                style={{
-                                    marginTop: "1.5rem",
-                                    padding: "1rem 1.1rem",
-                                    background: "rgba(0,212,255,.03)",
-                                    border: "1px solid rgba(0,212,255,.1)",
-                                    fontSize: ".68rem",
-                                    color: "#334155",
-                                    lineHeight: 1.7
-                                }}
-                            >
-                                <span
-                                    style={{
-                                        color: "#00d4ff",
-                                        letterSpacing: ".1em",
-                                        textTransform: "uppercase",
-                                        fontSize: ".58rem"
-                                    }}
-                                >
+                            <div className="sr-support-block">
+                                <span className="sr-support-kicker">
                                     Support My Work
                                 </span>
                                 <br />
@@ -901,8 +847,7 @@ export default function SmartResume() {
                                 You can support my journey with a coffee,
                                 Every contribution helps me build more creative projects.
                                 <br />
-                                <a href="#" onClick={e => { e.preventDefault(); setShowCoffee(true); }}
-                                    style={{ color: "#f59e0b", textDecoration: "none", fontWeight: 600 }}>
+                                <a href="#" className="sr-support-link" onClick={e => { e.preventDefault(); setShowCoffee(true); }}>
                                     → ☕ Buy Me a Coffee 
                                 </a>
                             </div>
@@ -977,22 +922,12 @@ export default function SmartResume() {
                                     msg.text.split("\n").map((line, i) => <div key={i}>{line}</div>)
                                 ) : msg.text.type === "contact" ? (
                                     <div>
-                                        <div style={{ marginBottom: ".5rem" }}>{msg.text.text}</div>
-                                        <div style={{ display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
-                                            <a href="mailto:rooby.dev22@gmail.com" style={{
-                                                display: "inline-flex", alignItems: "center", gap: ".4rem",
-                                                background: "rgba(0,212,255,.15)", border: "1px solid rgba(0,212,255,.3)",
-                                                color: "#00d4ff", padding: ".55rem 1rem", borderRadius: "999px",
-                                                textDecoration: "none", fontSize: ".82rem", fontWeight: 500
-                                            }}>
+                                        <div className="sr-chat-contact-text">{msg.text.text}</div>
+                                        <div className="sr-chat-contact-row">
+                                            <a href="mailto:rooby.dev22@gmail.com" className="sr-chat-contact-btn email">
                                                 <span>✉</span> Email
                                             </a>
-                                            <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer" style={{
-                                                display: "inline-flex", alignItems: "center", gap: ".4rem",
-                                                background: "rgba(245,158,11,.15)", border: "1px solid rgba(245,158,11,.3)",
-                                                color: "#f59e0b", padding: ".55rem 1rem", borderRadius: "999px",
-                                                textDecoration: "none", fontSize: ".82rem", fontWeight: 500
-                                            }}>
+                                            <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer" className="sr-chat-contact-btn linkedin">
                                                 <span>in</span> LinkedIn
                                             </a>
                                         </div>
