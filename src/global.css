@@ -12,6 +12,15 @@ img{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-sel
 body{-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
 a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text}
 
+/* ── Mobile / Touch Optimizations ── */
+@supports (hover:hover){
+  .sr-contactcircle:hover .sr-circleicon{transform:translateY(-4px) scale(1.05)}
+}
+@media(hover:none){
+  .sr-circleicon{cursor:pointer}
+  .sr-contactcircle:active .sr-circleicon{transform:scale(0.95)}
+}
+
 /* ── Floating Code Background ── */
 .sr-codebg{
   position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
@@ -345,14 +354,16 @@ a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-m
 
 /* ── Medium contact icons (below heading) ── */
 .sr-contactrow{display:flex;gap:2.5rem;margin:0 0 1.75rem}
-.sr-contactcircle{display:flex;flex-direction:column;align-items:center;gap:.5rem;text-decoration:none;cursor:pointer}
+.sr-contactcircle{display:flex;flex-direction:column;align-items:center;gap:.5rem;text-decoration:none;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;user-select:none}
 .sr-circleicon{
   width:100px;height:85px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:1rem;font-weight:700;
- transition:transform .25s;
+  transition:transform .25s;pointer-events:auto;-webkit-user-select:none;user-select:none;
 }
+.sr-circleicon svg{pointer-events:auto;display:block;width:100%;height:100%;-webkit-touch-callout:none}
 .sr-contactcircle:hover .sr-circleicon{transform:translateY(-4px) scale(1.05)}
+.sr-contactcircle:active .sr-circleicon{transform:scale(0.95)}
 .sr-contactcircle span{font-size:1.61rem;letter-spacing:.1em;text-transform:uppercase;color:#e2e8f0;font-weight:500}
 
 .sr-circleicon.email{
@@ -401,6 +412,12 @@ a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-m
 .sr-chat-contact-btn.linkedin{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#f59e0b}
 
 /* ══ RESPONSIVE ══ */
+@media(max-width:1024px){
+  .sr-section{padding:4rem 1.5rem}
+  .sr-contactrow{gap:2rem}
+  .sr-circleicon{width:90px;height:75px}
+  .sr-circleicon.email,.sr-circleicon.linkedin,.sr-circleicon.whatsapp{font-size:1.4rem}
+}
 @media(max-width:800px){
   .sr-navlinks{display:none}
   .sr-aboutgrid{grid-template-columns:1fr;gap:2rem}
@@ -408,11 +425,47 @@ a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-m
   .sr-heroname{font-size:clamp(2.5rem,13vw,5rem)}
   .sr-stat:nth-child(n+4){display:none}
   .sr-footer{flex-direction:column;gap:.75rem;text-align:center;padding-bottom:4rem}
+  .sr-contactrow{gap:1.5rem;flex-wrap:wrap;justify-content:center}
+  .sr-circleicon{width:80px;height:70px}
+  .sr-contact-linkedin{font-size:1.4rem}
+}
+@media(max-width:640px){
+  .sr-section{padding:3.5rem 1rem}
+  .sr-heroname{font-size:clamp(2rem,11vw,3.5rem)}
+  .sr-contactrow{gap:1.2rem}
+  .sr-circleicon{width:75px;height:65px}
+  .sr-circleicon.email,.sr-circleicon.linkedin,.sr-circleicon.whatsapp{font-size:1.2rem}
+  .sr-contact-linkedin{font-size:1.2rem}
+  .sr-contactcircle span{font-size:1.3rem}
 }
 @media(max-width:480px){
-  .sr-nav{padding:0 1rem}
-  #hero{padding-left:1rem;padding-right:1rem}
-  .sr-section{padding:4rem 1rem}
+  .sr-nav{padding:0 1rem;height:52px}
+  #hero{padding-left:1rem;padding-right:1rem;padding-top:6rem}
+  .sr-section{padding:3rem 1rem}
+  .sr-page{margin-top:0}
+  .sr-heroname{font-size:clamp(1.8rem,10vw,2.8rem)}
+  .sr-herorole{font-size:.85rem}
+  .sr-heroctas{gap:.6rem}
+  .sr-btnprimary,.sr-btnoutline{font-size:.65rem;padding:.5rem .9rem}
+  .sr-contactrow{gap:1rem;flex-wrap:wrap;justify-content:center}
+  .sr-circleicon{width:70px;height:60px;min-height:60px}
+  .sr-circleicon.email,.sr-circleicon.linkedin,.sr-circleicon.whatsapp{font-size:1.1rem}
+  .sr-contact-linkedin{font-size:1.1rem}
+  .sr-contactcircle span{font-size:1.1rem}
+  .sr-skillsgrid{grid-template-columns:1fr}
+  .sr-whygrid{grid-template-columns:1fr}
+  .sr-deploygrid{grid-template-columns:1fr}
+  .sr-toaststack{top:3.5rem;right:1rem}
+  .sr-toast{font-size:.6rem;padding:.5rem .7rem}
+}
+@media(max-width:360px){
+  .sr-nav{padding:0 .75rem}
+  .sr-section{padding:2.5rem .75rem}
+  .sr-heroname{font-size:clamp(1.5rem,9vw,2.5rem)}
+  .sr-herorole{font-size:.8rem}
+  .sr-circleicon{width:65px;height:55px}
+  .sr-circleicon.email,.sr-circleicon.linkedin,.sr-circleicon.whatsapp{font-size:1rem}
+  .sr-contact-linkedin{font-size:1rem}
 }
 
 
