@@ -50,6 +50,56 @@ a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-m
 .sr-navlinks li::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:#00d4ff;transform:scaleX(0);transition:transform .2s}
 .sr-navlinks li:hover,.sr-navlinks li.active{color:#00d4ff}
 .sr-navlinks li.active::after,.sr-navlinks li:hover::after{transform:scaleX(1)}
+.sr-navcontact-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.sr-navcontact-label{display:inline-block;position:relative;z-index:1;line-height:1}
+
+.sr-navcontact-pop{
+  position:absolute;left:100%;top:50%;
+  transform:translateY(-50%) translateX(6px) scale(.5);
+  display:flex;align-items:center;justify-content:center;gap:.56rem;
+  padding:.6rem 0 .6rem 1.1rem; /* bridges the gap — part of the hoverable box now */
+  border-radius:999px;background:transparent;border:none;box-shadow:none;
+  opacity:0;visibility:hidden;
+  transition:opacity .18s ease,transform .18s ease,visibility 0s linear .45s;
+  transform-origin:left center;white-space:nowrap;
+}
+.sr-navlinks li:hover .sr-navcontact-pop,
+.sr-navlinks li:focus-within .sr-navcontact-pop,
+.sr-navcontact-wrap:hover .sr-navcontact-pop,
+.sr-navcontact-wrap:active .sr-navcontact-pop{
+  opacity:1;visibility:visible;
+  transform:translateY(-50%) translateX(0) scale(1);
+  transition:opacity .18s ease,transform .18s ease,visibility 0s linear 0s;
+  animation:contactPop .28s cubic-bezier(.22,1.4,.28,1)
+}
+
+.sr-navcontact-link{
+  width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:800;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease,border-color .18s ease;
+  border:1px solid rgba(255,255,255,.12);background:rgba(15,23,42,.96);box-shadow:0 10px 22px rgba(2,6,23,.32);
+  transform:scale(.55);opacity:0;
+}
+.sr-navlinks li:hover .sr-navcontact-link,.sr-navlinks li:focus-within .sr-navcontact-link,.sr-navcontact-wrap:hover .sr-navcontact-link,.sr-navcontact-wrap:active .sr-navcontact-link{opacity:1;transform:scale(1);animation:iconPop .26s cubic-bezier(.2,1.2,.28,1) both}
+.sr-navcontact-link:nth-child(1){animation-delay:0ms}
+.sr-navcontact-link:nth-child(2){animation-delay:35ms}
+.sr-navcontact-link:nth-child(3){animation-delay:70ms}
+.sr-navcontact-link:hover{transform:translateY(-2px) scale(1.08);filter:brightness(1.22)}
+.sr-navcontact-link:active{transform:scale(.92);filter:brightness(1.3)}
+.sr-navcontact-link.email{color:#dff9ff;border-color:rgba(34,211,238,.6);background:rgba(34,211,238,.22)}
+.sr-navcontact-link.linkedin{color:#edf6ff;border-color:rgba(96,165,250,.6);background:rgba(96,165,250,.22)}
+.sr-navcontact-link.whatsapp{color:#ebfff1;border-color:rgba(34,197,94,.6);background:rgba(34,197,94,.22)}
+
+@keyframes contactPop{
+  0%{opacity:0;transform:translateY(-50%) translateX(8px) scale(.45)}
+  55%{opacity:1;transform:translateY(-50%) translateX(-2px) scale(1.12)}
+  100%{opacity:1;transform:translateY(-50%) translateX(0) scale(1)}
+}
+
+@keyframes iconPop{
+  0%{opacity:0;transform:scale(.4)}
+  65%{opacity:1;transform:scale(1.18)}
+  100%{opacity:1;transform:scale(1)}
+}
 .sr-navbtn{
   font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
   border:1px solid #00d4ff;color:#00d4ff;background:transparent;

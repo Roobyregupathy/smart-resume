@@ -619,8 +619,29 @@ export default function SmartResume() {
                 </div>
                 <ul className="sr-navlinks">
                     {navItems.map(n => (
-                        <li key={n.id} className={activeSection === n.id ? "active" : ""} onClick={() => scrollTo(n.id)}>
-                            {n.label}
+                        <li
+                            key={n.id}
+                            className={activeSection === n.id ? "active" : ""}
+                            onClick={() => (n.id !== "contact" ? scrollTo(n.id) : scrollTo(n.id))}
+                        >
+                            {n.id === "contact" ? (
+                                <div className="sr-navcontact-wrap">
+                                    <span className="sr-navcontact-label">{n.label}</span>
+                                    <div className="sr-navcontact-pop" aria-label="Contact options">
+                                        <a href="mailto:rooby.dev22@gmail.com" className="sr-navcontact-link email" aria-label="Email">
+                                            ✉
+                                        </a>
+                                        <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer" className="sr-navcontact-link linkedin" aria-label="LinkedIn">
+                                            in
+                                        </a>
+                                        <a href="https://wa.me/918610669798" target="_blank" rel="noreferrer" className="sr-navcontact-link whatsapp" aria-label="WhatsApp">
+                                            WA
+                                        </a>
+                                    </div>
+                                </div>
+                            ) : (
+                                n.label
+                            )}
                         </li>
                     ))}
                 </ul>
