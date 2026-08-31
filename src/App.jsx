@@ -897,8 +897,8 @@ export default function SmartResume() {
                     <div className="sr-flinks">
                         <a href="mailto:rooby.dev22@gmail.com">Email</a>
                         <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer">LinkedIn</a>
-                        <a href="https://wa.me/MeRooby" target="_blank" rel="noreferrer">WhatsApp</a>
-                        <span onClick={handleDownload}>Resume PDF</span>
+                        <a href="https://wa.me/918610669798" target="_blank" rel="noreferrer">WhatsApp</a>
+                        <span onClick={handleDownload}>Resume</span>
                     </div>
                 </footer>
 
