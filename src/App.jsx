@@ -597,7 +597,7 @@ export default function SmartResume() {
                                         <a href="https://www.linkedin.com/in/roobyregupathy" target="_blank" rel="noreferrer" className="sr-navcontact-link linkedin" aria-label="LinkedIn">
                                             in
                                         </a>
-                                        <a href="https://wa.me/MeRooby" target="_blank" rel="noreferrer" className="sr-navcontact-link whatsapp" aria-label="WhatsApp">
+                                        <a href="https://wa.me/918610669798" target="_blank" rel="noreferrer" className="sr-navcontact-link whatsapp" aria-label="WhatsApp">
                                             WA
                                         </a>
                                     </div>
@@ -817,7 +817,7 @@ export default function SmartResume() {
                                     <div className="sr-circleicon linkedin sr-contact-linkedin">in</div>
                                     
                                 </a>
-                                <a href="https://wa.me/MeRooby" target="_blank" rel="noreferrer" className="sr-contactcircle" aria-label="WhatsApp">
+                                <a href="https://wa.me/918610669798" target="_blank" rel="noreferrer" className="sr-contactcircle" aria-label="WhatsApp">
                                     <div className="sr-circleicon whatsapp">
                                         
                                         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
