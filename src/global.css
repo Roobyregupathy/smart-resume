@@ -119,6 +119,17 @@ a,button,input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-m
   padding:.4rem 1.1rem;cursor:pointer;transition:all .2s;
 }
 .sr-navbtn:hover{background:#00d4ff;color:#050810;box-shadow:0 0 24px rgba(0,212,255,.35)}
+.sr-navactions{display:flex;align-items:center;gap:1rem}
+.sr-email-switch{display:flex;align-items:center;gap:.4rem;color:#ff334d;font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-shadow:0 0 8px rgba(255,51,77,.55)}
+.sr-email-switch{display:flex;align-items:center;gap:.4rem;color:#ff334d;font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-shadow:0 0 8px rgba(255,51,77,.55);padding:.35rem .55rem;border:1px solid rgba(255,51,77,.65);background:linear-gradient(145deg,rgba(255,51,77,.2),rgba(75,8,22,.75));box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 3px 0 #5c0b1b,0 6px 14px rgba(255,51,77,.2);transition:transform .15s,box-shadow .15s}
+.sr-email-switch:hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 4px 0 #5c0b1b,0 8px 18px rgba(255,51,77,.3)}
+.sr-email-switch:active{transform:translateY(2px);box-shadow:inset 0 1px 2px rgba(0,0,0,.35),0 1px 0 #5c0b1b,0 3px 8px rgba(255,51,77,.2)}
+.sr-email-switch input{position:absolute;opacity:0;pointer-events:none}
+.sr-switch-track{width:28px;height:16px;border:1px solid #475569;border-radius:999px;padding:2px;transition:background .2s,border-color .2s}
+.sr-switch-track span{display:block;width:10px;height:10px;border-radius:50%;background:#64748b;transition:transform .2s,background .2s}
+.sr-email-switch input:checked + .sr-switch-track{background:rgba(34,197,94,.2);border-color:#22c55e}
+.sr-email-switch input:checked + .sr-switch-track span{background:#22c55e;transform:translateX(12px)}
+.sr-email-switch input:focus-visible + .sr-switch-track{outline:2px solid #00d4ff;outline-offset:2px}
 
 /* ── Stats bar (bottom) ── */
 .sr-statsbar{

@@ -17,12 +17,15 @@ const EJS = {
 };
 const UPI_ID = import.meta.env.VITE_UPI_ID;
 const UPI_NAME = import.meta.env.VITE_UPI_NAME;
+const isLocalhost = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
 /* ═══════════════════════════════════════════════════════════
    MAIL MIDDLEWARE
    Centralised — call sendMail(type, payload) anywhere
    Types: "contact" | "view_notify" | "download_notify"
 ═══════════════════════════════════════════════════════════ */
-const sendMail = async (type, payload = {}) => {
+const sendMail = async (type, payload = {}, emailActionsEnabled = true) => {
+    if (!emailActionsEnabled) return;
+
     const templates = {
         // Someone filled the contact form
         contact: {
@@ -122,6 +125,10 @@ const TYPEWRITER = [
 export default function SmartResume() {
     /* ── State ── */
     const [stats, setStats] = useState({ views: 0, downloads: 0, contacts: 0 });
+    const [emailActionsEnabled, setEmailActionsEnabled] = useState(() => {
+        if (!isLocalhost) return true;
+        return window.localStorage.getItem("smart-resume-email-actions") === "true";
+    });
     const [bumping, setBumping] = useState({});
     const [toasts, setToasts] = useState([]);
     const [activeSection, setActiveSection] = useState("hero");
@@ -243,9 +250,10 @@ export default function SmartResume() {
                         visitorEmail: visitorEmail,
                         hrName: visitorName
 
-                    });
-                    if (visitorEmail) {        
-                        const scriptUrl = "https://script.google.com/macros/s/AKfycbw3yq8S_AwYjJjTVciFuLTaQwO4NydD6aQJGqcYbUN5SGcw3ovhZdHHrPPABAb9PlGX/exec";
+                    }, emailActionsEnabled);
+                    if (visitorEmail) {    
+                            
+                        const scriptUrl = "https://script.google.com/macros/s/AKfycbyzWhifFAOSKUlCuKwaY9CRMIx8h9CjybI4y3WUWgCEpHmlCNJZzI0ru-J_opB0dH9L/exec";
                         fetch(`${scriptUrl}?ref_email=${encodeURIComponent(visitorEmail)}&hr_name=${encodeURIComponent(visitorName)}`, {
                             mode: 'no-cors' // Allows cross-origin background execution
                         }).catch(err => console.warn("[appsScript]", err));
@@ -386,7 +394,7 @@ export default function SmartResume() {
             pushToast(`Resume downloaded — ${newDownloads} total download${newDownloads > 1 ? "s" : ""}`, "⬇", "amber");
             bumpStat("downloads");
             // 📧 Notify you by email on every download
-            await sendMail("download_notify", { count: newDownloads });
+            await sendMail("download_notify", { count: newDownloads }, emailActionsEnabled);
         } catch (err) {
             console.warn("[handleDownload]", err);
         }
@@ -410,7 +418,7 @@ export default function SmartResume() {
         setSending(true);
         try {
             // 📧 Send contact message to you via EmailJS
-            await sendMail("contact", { name: cName, email: cEmail, message: cMsg });
+            await sendMail("contact", { name: cName, email: cEmail, message: cMsg }, emailActionsEnabled);
             // Update contacts count in Supabase
             const { data } = await supabase
                 .from('counted').select('contacts').eq('id', 1).single();
@@ -428,6 +436,12 @@ export default function SmartResume() {
         }
         setSending(false);
     }
+    const handleEmailActionsToggle = (event) => {
+        const enabled = event.target.checked;
+        setEmailActionsEnabled(enabled);
+        window.localStorage.setItem("smart-resume-email-actions", String(enabled));
+    };
+
     const navItems = [
         { id: "hero", label: "Home" },
         { id: "about", label: "About" },
@@ -608,7 +622,20 @@ export default function SmartResume() {
                         </li>
                     ))}
                 </ul>
-                <button className="sr-navbtn" onClick={handleDownload}>↓ Resume</button>
+                <div className="sr-navactions">
+                    {isLocalhost && (
+                        <label className="sr-email-switch" title="Enable or disable outgoing email actions">
+                            <input
+                                type="checkbox"
+                                checked={emailActionsEnabled}
+                                onChange={handleEmailActionsToggle}
+                            />
+                            <span className="sr-switch-track" aria-hidden="true"><span /></span>
+                            <span>Email</span>
+                        </label>
+                    )}
+                    <button className="sr-navbtn" onClick={handleDownload}>↓ Resume</button>
+                </div>
             </nav>
 
             {/* ══════════════════════════════════════════════════════
